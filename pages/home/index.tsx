@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import app from '@react-native-firebase/app';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+
+const Auth = auth();
 
 export default function Home({ navigation }) {
+
+  const [user, setUser] = React.useState<FirebaseAuthTypes.User|null>(null);
+
+  Auth.onAuthStateChanged(user => {
+    console.log(user)
+    if (user) {
+      // user logged in
+      setUser(user);
+      console.log('User signed in anonymously');
+    }
+  });
+
+Auth.signInAnonymously();
 
   const [showModal, setShowModal] = useState(false);
   const [gameCode, setGameCode] = useState('');
@@ -20,6 +37,7 @@ export default function Home({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text>{user?"Logged In": "Logged Out"}</Text>
       <Modal
         visible={showModal}
         onRequestClose={() => closeModal()}
