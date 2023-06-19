@@ -3,15 +3,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default function dbConnect() {
-    const options: mongoose.ConnectOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+  const options: mongoose.ConnectOptions = {};
 
-    mongoose.connect('mongodb://localhost:27017/mean', options);
+  mongoose.connect('mongodb://localhost:27017/mean', options);
 
-    const db = mongoose.connection;
+  const db = mongoose.connection;
 
-    db.once('open', () => {
-        console.log('Connected to MongoDB');
-    });
+  db.once('open', () => {
+    console.log('Connected to MongoDB');
+  });
 
-    db.on('error', console.error.bind(console, 'connection error:'));
+  db.on('error', console.error.bind(console, 'connection error:'));
+
+  return db;
 }
