@@ -6,7 +6,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { IdGenerator } from './helpers';
 import http from 'http';
 
-import { Clients, Method, Game, isClientGameMessage, isClientMessage, ClientGameMessage } from './types';
+import { Clients, Method, Game, isClientGameMessage, isClientMessage, ClientGameMessage, ConnectResponse } from './types';
 import createGame from './controllers/createGame';
 import joinGame from './controllers/joinGame';
 import badRequest from './controllers/badRequest';
@@ -35,6 +35,10 @@ wss.on('connection', (ws: WebSocket) => {
   let gameId: number|null=null;
   clients[id] = ws;
   console.log('New connection ' + id);
+  ws.send(JSON.stringify({
+    method: Method.CONNECT_RESPONSE,
+    userId: id,
+  } as ConnectResponse));
 
   ws.on('message', (unparsed_message: string) => {
     let message: object;
@@ -59,7 +63,7 @@ wss.on('connection', (ws: WebSocket) => {
       }
       switch (message.method) {
       case Method.JOIN_GAME_REQUEST:
-        joinGame(ws, message, games);
+        joinGame(ws, message, games, clients);
         break;
       case Method.START_GAME_REQUEST:
         ws.send('Not yet implemented');

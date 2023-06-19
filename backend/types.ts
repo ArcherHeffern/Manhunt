@@ -11,6 +11,7 @@ export type Clients = {
 };
 
 export enum Method {
+  CONNECT_RESPONSE = 'connectResponse',
   CREATE_GAME_REQUEST = 'createGameRequest',
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_REQUEST = 'joinGameRequest',
@@ -158,6 +159,13 @@ export interface ServerGameResponse extends ServerResponse {}
 export interface ServerGameBroadcast extends ServerBroadcast {}
 
 export interface ServerGameMessage extends ServerMessage {}
+
+// Connect to server
+
+export interface ConnectResponse extends ServerResponse {
+  method: Method.CONNECT_RESPONSE;
+  userId: number;
+}
 
 // Create Game
 export interface CreateGameRequest extends ClientRequest {
