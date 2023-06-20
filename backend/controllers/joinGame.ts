@@ -1,13 +1,24 @@
-import { Game, Player, isJoinGameRequest, JoinGameResponse, Method, StatusCode, ServerBroadcast, GameQueueBroadcast, Clients } from '../types';
+import { Game, Player, isJoinGameRequest, JoinGameResponse, Method, StatusCode, GameQueueBroadcast, Clients } from '../types';
 import WebSocket from 'ws';
 
-export default function joinGame(ws: WebSocket, message: object, games: { [key: string]: Game }, clients: Clients) {
+export default function joinGame(ws: WebSocket, message: object, game: Game, clients: Clients, id: number) {
   if (isJoinGameRequest(message)) {
-    if (games[message.gameId] === undefined) {
+    let status = null;
+    if (game.finished) {
+      status = StatusCode.GAME_IS_FINISHED;
+    } else if (game.started) {
+      status = StatusCode.GAME_IN_PROGRESS;
+    } else if (game.players.find(player => player.id === id)) {
+      status = StatusCode.ALREADY_IN_GAME;
+    } else if (game.players.length >= game.settings.maxPlayers) {
+      status = StatusCode.GAME_IS_FULL;
+    } else if (game.players.find(player => player.name === message.username)) {
+      status = StatusCode.USERNAME_TAKEN;
+    } 
+    if (status) {
       const response: JoinGameResponse = {
         method: Method.JOIN_GAME_RESPONSE,
-        status: StatusCode.GAME_NOT_FOUND,
-        message: 'Game not found',
+        status,
       };
       ws.send(JSON.stringify(response));
     } else {
@@ -15,19 +26,18 @@ export default function joinGame(ws: WebSocket, message: object, games: { [key: 
         id: message.userId,
         name: message.username || 'Player ' + message.userId,
       };
-      games[message.gameId].players.push(player);
+      game.players.push(player);
       const response: JoinGameResponse = {
         method: Method.JOIN_GAME_RESPONSE,
         status: StatusCode.OK,
-        message: 'Joined game',
-        game: games[message.gameId],
+        game,
       };
       ws.send(JSON.stringify(response));
 
-      const players = games[message.gameId].players;
+      const players = game.players;
       const broadcast: GameQueueBroadcast = {
         method: Method.GAME_QUEUE_BROADCAST,
-        users: games[message.gameId].players,
+        players,
       };
       for (const player of players) {
         if (player.id !== message.userId) {

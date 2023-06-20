@@ -12,10 +12,12 @@ export type Clients = {
 
 export enum Method {
   CONNECT_RESPONSE = 'connectResponse',
+  ERROR_RESPONSE = 'errorResponse',
   CREATE_GAME_REQUEST = 'createGameRequest',
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_REQUEST = 'joinGameRequest',
   JOIN_GAME_RESPONSE = 'joinGameResponse',
+  LEAVE_GAME_MESSAGE = 'leaveGameMessage',
   START_GAME_REQUEST = 'startGameRequest',
   START_GAME_RESPONSE = 'startGameResponse',
   GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
@@ -33,6 +35,13 @@ export enum StatusCode {
   BAD_REQUEST = 'BAD_REQUEST',
   GAME_NOT_FOUND = 'GAME_NOT_FOUND',
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
+  INVALID_USER_ID_ERROR = 'INVALID_USER_ID_ERROR',
+  METHOD_NOT_FOUND = 'METHOD_NOT_FOUND',
+  GAME_IS_FINISHED = 'GAME_IS_FINISHED',
+  GAME_IN_PROGRESS = 'GAME_IN_PROGRESS',
+  ALREADY_IN_GAME = 'ALREADY_IN_GAME',
+  GAME_IS_FULL = 'GAME_IS_FULL',
+  USERNAME_TAKEN = 'USERNAME_TAKEN',
 }
 
 export type Player = {
@@ -63,6 +72,8 @@ export type Game = {
   created: Date;
   settings: GameSettings;
 }
+
+export type Games = { [key: string]: Game };
 
 export function isGame(game: object): game is Game {
   return (
@@ -109,7 +120,6 @@ function isGameSettings(settings: object): settings is GameSettings {
 export interface ClientMessage {
   method: string;
   userId: number;
-  userName?: string;
 }
 
 export function isClientMessage(message: object): message is ClientMessage {
@@ -127,7 +137,6 @@ export function isClientRequest(message: object): message is ClientRequest {
 export interface ServerResponse {
   method: Method;
   status: StatusCode;
-  message?: string;
 }
 
 export interface ServerMessage {
@@ -170,6 +179,7 @@ export interface ConnectResponse extends ServerResponse {
 // Create Game
 export interface CreateGameRequest extends ClientRequest {
   method: Method.CREATE_GAME_REQUEST;
+  username?: string;
   gameSettings: GameSettings;
 }
 
@@ -202,9 +212,18 @@ export interface JoinGameResponse extends ServerGameResponse {
   game?: Game;
 }
 
+export interface LeaveGameMessage extends ClientGameMessage {
+  method: Method.LEAVE_GAME_MESSAGE;
+}
+
+export function isLeaveGameMessage(message: object): message is LeaveGameMessage {
+  return isClientGameMessage(message)
+  && (message as LeaveGameMessage).method === Method.LEAVE_GAME_MESSAGE;
+}
+
 export interface GameQueueBroadcast extends ServerBroadcast {
   method: Method.GAME_QUEUE_BROADCAST;
-  users: Player[];
+  players: Player[];
 }
 
 // Start Game

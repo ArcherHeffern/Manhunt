@@ -1,12 +1,12 @@
-import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, Method, Player } from '../types';
+import { Game, Games, CreateGameResponse, StatusCode, isCreateGameRequest, Method, Player } from '../types';
 import WebSocket from 'ws';
 
-export default function createGame(ws: WebSocket, message: object, games: { [key: string]: Game }, gameId: number) {
+export default function createGame(ws: WebSocket, message: object, games: Games, gameId: number): boolean {
   if (isCreateGameRequest(message)) {
     console.log('create new game');
     const player: Player = {
       id: message.userId,
-      name: message.userName || 'Player ' + message.userId,
+      name: message.username || 'Player ' + message.userId,
       location: undefined
     };
 
@@ -41,11 +41,13 @@ export default function createGame(ws: WebSocket, message: object, games: { [key
     };
 
     ws.send(JSON.stringify(response));
+    return true;
   } else {
     const response: CreateGameResponse = {
       method: Method.CREATE_GAME_RESPONSE,
       status: StatusCode.BAD_REQUEST,
     };
     ws.send(JSON.stringify(response));
+    return false;
   }
 }
