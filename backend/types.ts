@@ -1,31 +1,34 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import WebSocket from 'ws';
-
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { Socket } from 'socket.io';
 // Types of websocket events
 // request/response: To specific client, response is sent back to client
 // broadcast: To all clients
 // message: To specific client
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SOCKET = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+
 export type Clients = {
-  [key: number]: WebSocket;
+  [key: string]: WebSocket;
 };
 
 export enum Method {
   CONNECT_RESPONSE = 'connectResponse',
-  ERROR_RESPONSE = 'errorResponse',
   CREATE_GAME_REQUEST = 'createGameRequest',
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_REQUEST = 'joinGameRequest',
   JOIN_GAME_RESPONSE = 'joinGameResponse',
   LEAVE_GAME_MESSAGE = 'leaveGameMessage',
-  START_GAME_REQUEST = 'startGameRequest',
-  START_GAME_RESPONSE = 'startGameResponse',
   GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
+  START_GAME_MESSAGE = 'startGameMessage',
+  STARTING_GAME_BROADCAST = 'startingGameBroadcast',
   GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
   PLAYER_LOCATION_MESSAGE = 'playerLocationMessage',
   PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
   PLAYER_FOUND_MESSAGE = 'playerFoundMessage',
   PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
+  END_GAME_MESSAGE = 'endGameMessage',
   GAME_OVER_BROADCAST = 'gameOverBroadcast',
 }
 
@@ -45,7 +48,7 @@ export enum StatusCode {
 }
 
 export type Player = {
-  id: number;
+  id: string;
   name: string;
   location?: string;
 }
@@ -60,7 +63,7 @@ export function isPlayer(player: object): player is Player {
 }
 
 export type Game = {
-  id: number;
+  id: string;
   players: Player[];
   hunters: Player[];
   found: Player[];
@@ -73,12 +76,12 @@ export type Game = {
   settings: GameSettings;
 }
 
-export type Games = { [key: string]: Game };
+export type Games = { [key: string]: Game|undefined };
 
 export function isGame(game: object): game is Game {
   return (
     game instanceof Object &&
-    typeof (game as Game).id === 'number' &&
+    typeof (game as Game).id === 'string' &&
     typeof (game as Game).players === 'object' &&
     typeof (game as Game).hunters === 'object' &&
     typeof (game as Game).found === 'object' &&
@@ -115,173 +118,79 @@ function isGameSettings(settings: object): settings is GameSettings {
   );
 }
 
-// Primative types - out of game
+export interface ClientMessage {}
 
-export interface ClientMessage {
-  method: string;
-  userId: number;
-}
-
-export function isClientMessage(message: object): message is ClientMessage {
-  return (typeof (message as ClientMessage).method === 'string'
-  && typeof (message as ClientMessage).userId === 'number'); 
-}
-
-export interface ClientRequest extends ClientMessage {}
-
-export function isClientRequest(message: object): message is ClientRequest {
-  return isClientMessage(message);
-}
-
-
+export interface ClientRequest {}
 export interface ServerResponse {
-  method: Method;
   status: StatusCode;
 }
 
-export interface ServerMessage {
-  method: Method;
-}
+export interface ServerMessage {}
 
-export interface ServerBroadcast {
-  method: Method;
-}
-
-// Primative types - in game
-
-export interface ClientGameMessage extends ClientMessage {
-  gameId: number;
-}
-
-export function isClientGameMessage(message: object): message is ClientGameMessage {
-  return (isClientMessage(message) && typeof (message as ClientGameMessage).gameId === 'number');
-}
-
-export interface ClientGameRequest extends ClientGameMessage {}
-
-export function isClientGameRequest(message: object): message is ClientGameRequest {
-  return isClientGameMessage(message);
-}
-
-export interface ServerGameResponse extends ServerResponse {}
-
-export interface ServerGameBroadcast extends ServerBroadcast {}
-
-export interface ServerGameMessage extends ServerMessage {}
-
-// Connect to server
-
-export interface ConnectResponse extends ServerResponse {
-  method: Method.CONNECT_RESPONSE;
-  userId: number;
-}
+export interface ServerBroadcast {}
 
 // Create Game
 export interface CreateGameRequest extends ClientRequest {
-  method: Method.CREATE_GAME_REQUEST;
   username?: string;
   gameSettings: GameSettings;
 }
 
 export function isCreateGameRequest(message: object): message is CreateGameRequest {
-  return isClientRequest(message)
-  && (message as CreateGameRequest).method === Method.CREATE_GAME_REQUEST
-  && isGameSettings((message as CreateGameRequest).gameSettings);
+  return isGameSettings((message as CreateGameRequest).gameSettings);
 }
 
 export interface CreateGameResponse extends ServerResponse {
-  method: Method.CREATE_GAME_RESPONSE;
   game?: Game;
 }
 
 // Queue
 
-export interface JoinGameRequest extends ClientGameRequest {
-  method: Method.JOIN_GAME_REQUEST; 
+export interface JoinGameRequest extends ClientRequest {
+  gameId: string;
   username?: string;
 }
 
 export function isJoinGameRequest(message: object): message is JoinGameRequest {
-  return isClientGameRequest(message)
-  && (message as JoinGameRequest).method === Method.JOIN_GAME_REQUEST
+  return typeof (message as JoinGameRequest).gameId === 'string'
   && (typeof (message as JoinGameRequest).username === 'string' || (message as JoinGameRequest).username === undefined);
 }
-
-export interface JoinGameResponse extends ServerGameResponse {
-  method: Method.JOIN_GAME_RESPONSE;
+export interface JoinGameResponse extends ServerResponse {
   game?: Game;
 }
-
-export interface LeaveGameMessage extends ClientGameMessage {
-  method: Method.LEAVE_GAME_MESSAGE;
-}
-
-export function isLeaveGameMessage(message: object): message is LeaveGameMessage {
-  return isClientGameMessage(message)
-  && (message as LeaveGameMessage).method === Method.LEAVE_GAME_MESSAGE;
-}
-
+export interface LeaveGameMessage extends ClientMessage {}
 export interface GameQueueBroadcast extends ServerBroadcast {
-  method: Method.GAME_QUEUE_BROADCAST;
   players: Player[];
 }
 
 // Start Game
 
-export interface StartGameRequest extends ClientGameRequest {
-  method: Method.START_GAME_REQUEST;
-}
-
-export function isStartGameRequest(message: object): message is StartGameRequest {
-  return isClientGameRequest(message)
-  && (message as StartGameRequest).method === Method.START_GAME_REQUEST;
-}
-
-export interface StartGameResponse extends ServerGameResponse {
-  method: Method.START_GAME_RESPONSE;
-}
+export interface StartGameMessage extends ClientMessage {}
+export interface StartingGameBroadcast extends ServerBroadcast {}
 
 // Game Running 
 // Grace
-export interface GracePeriodBroadcast extends ServerGameBroadcast {
-  method: Method.GRACE_PERIOD_BROADCAST;
+export interface GracePeriodBroadcast extends ServerBroadcast {
   time: number; // seconds
 }
-
-export interface ClientSidePlayerLocationMessage extends ClientGameMessage {
-  method: Method.PLAYER_LOCATION_MESSAGE;
+export interface ClientSidePlayerLocationMessage extends ClientMessage {
   location: string;
 }
 
 export function isClientSidePlayerLocationMessage(message: object): message is ClientSidePlayerLocationMessage {
-  return isClientGameMessage(message)
-  && (message as ClientSidePlayerLocationMessage).method === Method.PLAYER_LOCATION_MESSAGE
-  && typeof (message as ClientSidePlayerLocationMessage).location === 'string';
+  return typeof (message as ClientSidePlayerLocationMessage).location === 'string';
 }
-
-export interface ServerSizePlayerLocationMessage extends ServerGameMessage {
-  method: Method.PLAYER_LOCATION_BROADCAST;
+export interface ServerSidePlayerLocationMessage extends ServerMessage {
   distance?: number;
   direction?: string; 
 }
 
-export interface PlayerFoundMessage extends ClientGameMessage { 
-  method: Method.PLAYER_FOUND_MESSAGE;
-}
-
-export function isPlayerFoundMessage(message: object): message is PlayerFoundMessage {
-  return isClientGameMessage(message)
-  && (message as PlayerFoundMessage).method === Method.PLAYER_FOUND_MESSAGE;
-}
-
-export interface PlayerFoundBroadcast extends ServerGameBroadcast {
-  method: Method.PLAYER_FOUND_BROADCAST;
+export interface PlayerFoundMessage extends ClientMessage {}
+export interface PlayerFoundBroadcast extends ServerBroadcast {
   playerName: string;
   numRemaining: number;
 }
 
 // Game Over
-export interface GameOverBroadcast extends ServerGameBroadcast {
-  method: Method.GAME_OVER_BROADCAST;
+export interface GameOverBroadcast extends ServerBroadcast {
   winner: string;
 }

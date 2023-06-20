@@ -1,18 +1,26 @@
-import { Game, Games, CreateGameResponse, StatusCode, isCreateGameRequest, Method, Player } from '../types';
-import WebSocket from 'ws';
+import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, Method, Player, SOCKET } from '../types';
+import games from '../games';
 
-export default function createGame(ws: WebSocket, message: object, games: Games, gameId: number): boolean {
+export default function createGame(socket: SOCKET, message: object) {
   if (isCreateGameRequest(message)) {
+    if (games[socket.id]) {
+      const response: CreateGameResponse = {
+        status: StatusCode.ALREADY_IN_GAME,
+      };
+      // TODO: Check if user is already in room or already has a game and send error 
+      socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
+      return;
+    }
     console.log('create new game');
     const player: Player = {
-      id: message.userId,
-      name: message.username || 'Player ' + message.userId,
+      id: socket.id,
+      name: message.username || 'Player ' + socket.id,
       location: undefined
     };
 
     const gameSettings = message.gameSettings;
     const game: Game = {
-      id: gameId,
+      id: socket.id,
       players: [player],
       hunters: [],
       found: [],
@@ -35,19 +43,16 @@ export default function createGame(ws: WebSocket, message: object, games: Games,
     games[game.id] = game;
 
     const response: CreateGameResponse = {
-      method: Method.CREATE_GAME_RESPONSE,
       game: game,
       status: StatusCode.OK,
     };
 
-    ws.send(JSON.stringify(response));
-    return true;
+    socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
+    socket.join(game.id);
   } else {
     const response: CreateGameResponse = {
-      method: Method.CREATE_GAME_RESPONSE,
       status: StatusCode.BAD_REQUEST,
     };
-    ws.send(JSON.stringify(response));
-    return false;
+    socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
   }
 }
