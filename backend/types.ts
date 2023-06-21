@@ -6,6 +6,7 @@ import { Socket } from 'socket.io';
 // broadcast: To all clients
 // message: To specific client
 
+export type IO = import('socket.io').Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SOCKET = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 
@@ -13,23 +14,33 @@ export type Clients = {
   [key: string]: WebSocket;
 };
 
-export enum Method {
-  CONNECT_RESPONSE = 'connectResponse',
+export enum ClientMethod {
   CREATE_GAME_REQUEST = 'createGameRequest',
-  CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_REQUEST = 'joinGameRequest',
-  JOIN_GAME_RESPONSE = 'joinGameResponse',
   LEAVE_GAME_MESSAGE = 'leaveGameMessage',
-  GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
   START_GAME_MESSAGE = 'startGameMessage',
-  STARTING_GAME_BROADCAST = 'startingGameBroadcast',
-  GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
   PLAYER_LOCATION_MESSAGE = 'playerLocationMessage',
-  PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
   PLAYER_FOUND_MESSAGE = 'playerFoundMessage',
-  PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
   END_GAME_MESSAGE = 'endGameMessage',
+}
+
+export enum ServerMethod {
+  CONNECT_RESPONSE = 'connectResponse',
+  CREATE_GAME_RESPONSE = 'createGameResponse',
+  JOIN_GAME_RESPONSE = 'joinGameResponse',
+  GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
+  GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
+  STARTING_GAME_BROADCAST = 'startingGameBroadcast',
+  PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
+  PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
   GAME_OVER_BROADCAST = 'gameOverBroadcast',
+}
+
+export enum Namespace {
+  GENERAL = 'general',
+  GAME = 'game',
+  HUNTER = 'hunter',
+  RUNNER = 'runner',
 }
 
 export enum StatusCode {
@@ -159,6 +170,7 @@ export interface JoinGameResponse extends ServerResponse {
 }
 export interface LeaveGameMessage extends ClientMessage {}
 export interface GameQueueBroadcast extends ServerBroadcast {
+  method: ServerMethod.GAME_QUEUE_BROADCAST;
   players: Player[];
 }
 

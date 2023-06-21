@@ -3,7 +3,7 @@ import routes from './http.routes';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
-import { Method, SOCKET } from './types';
+import { ClientMethod, SOCKET, IO } from './types';
 import createGame from './controllers/createGame';
 import endGame from './controllers/endGame';
 import joinGame from './controllers/joinGame';
@@ -23,16 +23,19 @@ const io = new Server(server, {
 
 io.on('connection', (socket: SOCKET) => {
  
-  socket.on(Method.CREATE_GAME_REQUEST, (message: object) => createGame(socket, message));
-  socket.on(Method.END_GAME_MESSAGE, () => endGame(socket));
-  socket.on(Method.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
-  socket.on(Method.LEAVE_GAME_MESSAGE, () => leaveGame(socket));
-  socket.on(Method.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
-  // socket.on('disconnect', () => leaveGame(ws, { method: Method.LEAVE_GAME_MESSAGE, userId: id, gameId: gameId } as ClientGameMessage, games[gameId], clients, id));
+  socket.on(ClientMethod.CREATE_GAME_REQUEST, (message: object) => createGame(socket, message));
+  socket.on(ClientMethod.END_GAME_MESSAGE, () => endGame(io, socket));
+  socket.on(ClientMethod.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
+  socket.on(ClientMethod.LEAVE_GAME_MESSAGE, () => leaveGame(io as IO, socket as SOCKET));
+  socket.on(ClientMethod.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
+
+  socket.on('disconnecting', () => {
+    leaveGame(io as IO, socket as SOCKET);
+  });
+
 });
 
-
-// TODO: Set random person to owner, or delete the game if no one is left 
+// TODO: Set random person to owner
 
 app.use(cors());
 app.use(routes);

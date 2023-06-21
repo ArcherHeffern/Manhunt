@@ -1,4 +1,4 @@
-import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, Method, Player, SOCKET } from '../types';
+import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, ServerMethod, Player, SOCKET, Namespace } from '../types';
 import games from '../games';
 
 export default function createGame(socket: SOCKET, message: object) {
@@ -8,7 +8,7 @@ export default function createGame(socket: SOCKET, message: object) {
         status: StatusCode.ALREADY_IN_GAME,
       };
       // TODO: Check if user is already in room or already has a game and send error 
-      socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
+      socket.emit(ServerMethod.CREATE_GAME_RESPONSE, JSON.stringify(response));
       return;
     }
     console.log('create new game');
@@ -47,12 +47,13 @@ export default function createGame(socket: SOCKET, message: object) {
       status: StatusCode.OK,
     };
 
-    socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
-    socket.join(game.id);
+    socket.emit(Namespace.GAME, JSON.stringify(response));
+    console.log('game created');
   } else {
     const response: CreateGameResponse = {
       status: StatusCode.BAD_REQUEST,
     };
-    socket.emit(Method.CREATE_GAME_RESPONSE, JSON.stringify(response));
+    console.log('bad request');
+    socket.emit(Namespace.GENERAL, JSON.stringify(response));
   }
 }

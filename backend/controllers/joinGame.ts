@@ -1,18 +1,20 @@
-import { Game, Player, isJoinGameRequest, JoinGameResponse, Method, StatusCode, GameQueueBroadcast, SOCKET } from '../types';
+import { Game, Player, isJoinGameRequest, JoinGameResponse, StatusCode, GameQueueBroadcast, SOCKET, Namespace, ServerMethod } from '../types';
 import games from '../games';
 
 export default function joinGame(socket: SOCKET, message: object) {
   if (isJoinGameRequest(message)) {
     let game = games[message.gameId];
     let status = null;
-    // TODO: Check if user is already in a game or has a game and send error
     if (!game) {
       status = StatusCode.GAME_NOT_FOUND;
+    } else if (socket.rooms.size > 1) {
+      status = StatusCode.ALREADY_IN_GAME;
     } else if (game.finished) {
       status = StatusCode.GAME_IS_FINISHED;
     } else if (game.started) {
       status = StatusCode.GAME_IN_PROGRESS;
     } else if (game.players.find(player => player.id === socket.id)) {
+      // TODO: Could perhaps later just switch them instead of denying
       status = StatusCode.ALREADY_IN_GAME;
     } else if (game.players.length >= game.settings.maxPlayers) {
       status = StatusCode.GAME_IS_FULL;
@@ -23,7 +25,7 @@ export default function joinGame(socket: SOCKET, message: object) {
       const response: JoinGameResponse = {
         status,
       };
-      socket.send(JSON.stringify(response));
+      socket.emit(Namespace.GENERAL, JSON.stringify(response));
     } else {
       game = game as Game;
       const player: Player = {
@@ -38,12 +40,13 @@ export default function joinGame(socket: SOCKET, message: object) {
       
       const players = game.players;
       const broadcast: GameQueueBroadcast = {
+        method: ServerMethod.GAME_QUEUE_BROADCAST,
         players,
       };
 
       socket.join(game.id);
-      socket.send(Method.JOIN_GAME_RESPONSE, JSON.stringify(response));
-      socket.to(game.id).emit(Method.GAME_QUEUE_BROADCAST, JSON.stringify(broadcast));
+      socket.emit(Namespace.GENERAL, JSON.stringify(response));
+      socket.to(game.id).emit(Namespace.GAME, JSON.stringify(broadcast));
     }
   }
 }
