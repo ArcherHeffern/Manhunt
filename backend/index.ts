@@ -3,12 +3,13 @@ import routes from './http.routes';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
-import { ClientMethod, SOCKET, IO } from './types';
+import { SOCKET, IO } from './types';
 import createGame from './controllers/createGame';
 import endGame from './controllers/endGame';
 import joinGame from './controllers/joinGame';
 import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
+import { ClientMethod } from '../frontend/types';
 
 const PORT = 8080;
 

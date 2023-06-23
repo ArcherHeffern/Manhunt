@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text } from 'react-native';
-import { waitingQueueProps } from '../../types';
+import { waitingQueueProps } from '../../types/';
 
 export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
   return (

@@ -1,6 +1,9 @@
-import React, { ChangeEvent, useReducer } from 'react';
-import { SafeAreaView, Button, View, StyleSheet, Text, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import { createGameProps, formData, actionType, formFields } from '../../types';
+import React, { useReducer, useContext } from 'react';
+import { SafeAreaView, Button, View, Text, TextInput } from 'react-native';
+import { createGameProps, formData, actionType, formFields } from '../../types/';
+import { connectionContext, gameContext } from '../../App';
+import { curryDispatch, createGame } from './utils';
+import styles from './styles';
 
 const formReducer = (state: formData, action: actionType): formData => {
   return {
@@ -11,9 +14,7 @@ const formReducer = (state: formData, action: actionType): formData => {
 
 export default function CreateGame({ route, navigation }: createGameProps) {
 
-  function createGame() {
-    navigation.navigate('WaitingQueue');
-  }
+  // state 
 
   const [formData, formDispatch] = useReducer(formReducer, {
     name: '',
@@ -22,11 +23,8 @@ export default function CreateGame({ route, navigation }: createGameProps) {
     confirmPassword: '',
   });
 
-  const curryDispatch = (name: formFields) => {
-    return (text: string) => {
-      formDispatch({ name: name, value: text })
-    }
-  }
+  const io = useContext(connectionContext);
+  const [game, setGame] = useContext(gameContext);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,45 +33,26 @@ export default function CreateGame({ route, navigation }: createGameProps) {
         <TextInput
           placeholder='name'
           keyboardType='ascii-capable'
-          onChangeText={curryDispatch(formFields.name)}
+          onChangeText={curryDispatch(formFields.name, formDispatch)}
         />
         <TextInput
-        placeholder='email'
-        keyboardType='ascii-capable'
-        onChangeText={curryDispatch(formFields.email)}
+          placeholder='email'
+          keyboardType='ascii-capable'
+          onChangeText={curryDispatch(formFields.email, formDispatch)}
         />
         <TextInput
-        placeholder='password'
-        keyboardType='ascii-capable'
-        onChangeText={curryDispatch(formFields.password)}
+          placeholder='password'
+          keyboardType='ascii-capable'
+          onChangeText={curryDispatch(formFields.password, formDispatch)}
         />
         <TextInput
-        placeholder='confirm password'
-        keyboardType='ascii-capable'
-        onChangeText={curryDispatch(formFields.confirmPassword)}
+          placeholder='confirm password'
+          keyboardType='ascii-capable'
+          onChangeText={curryDispatch(formFields.confirmPassword, formDispatch)}
         />
       </View>
       <Text>FormData: {JSON.stringify(formData)}</Text>
-      <Button title='Create Game' onPress={createGame} />
+      <Button title='Create Game' onPress={() => createGame(io, formData, setGame, navigation)} />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 10
-  },
-  mainCreateGameText: {
-    flexGrow: 1,
-  },
-  formContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-});

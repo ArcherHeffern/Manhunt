@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { homeProps } from '../../types';
+import { homeProps } from '../../types/';
 
 
 export default function Home({ route, navigation }: homeProps) {

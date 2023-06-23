@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text } from 'react-native';
-import { gameProps } from '../../types';
+import { gameProps } from '../../types/';
 
 export default function Game({ route, navigation }: gameProps) {
   return (

@@ -1,31 +1,34 @@
-import { Game, Player, isJoinGameRequest, JoinGameResponse, StatusCode, GameQueueBroadcast, SOCKET, Namespace, ServerMethod } from '../types';
+import { Game, Player, isJoinGameRequest, JoinGameResponse, StatusCode, GameQueueBroadcast, Event, ServerMethod } from '../../frontend/types';
+import { SOCKET } from '../types';
 import games from '../games';
 
 export default function joinGame(socket: SOCKET, message: object) {
   if (isJoinGameRequest(message)) {
-    let game = games[message.gameId];
-    let status = null;
+    let game = games[message.gameId] as Game;
+    let resMessage = '';
     if (!game) {
-      status = StatusCode.GAME_NOT_FOUND;
+      resMessage = 'Game does not exist';
     } else if (socket.rooms.size > 1) {
-      status = StatusCode.ALREADY_IN_GAME;
+      resMessage = 'Already in a game';
     } else if (game.finished) {
-      status = StatusCode.GAME_IS_FINISHED;
+      resMessage = 'Game has already finished';
     } else if (game.started) {
-      status = StatusCode.GAME_IN_PROGRESS;
+      resMessage = 'Game has already started';
     } else if (game.players.find(player => player.id === socket.id)) {
       // TODO: Could perhaps later just switch them instead of denying
-      status = StatusCode.ALREADY_IN_GAME;
+      resMessage = 'Already in this game';
     } else if (game.players.length >= game.settings.maxPlayers) {
-      status = StatusCode.GAME_IS_FULL;
+      resMessage = 'Game is full';
     } else if (game.players.find(player => player.name === message.username)) {
-      status = StatusCode.USERNAME_TAKEN;
+      resMessage = 'Username already taken';
     } 
-    if (status) {
+    if (resMessage) {
       const response: JoinGameResponse = {
-        status,
+        method: ServerMethod.JOIN_GAME_RESPONSE,
+        status: StatusCode.BAD_REQUEST,
+        message: resMessage,
       };
-      socket.emit(Namespace.GENERAL, JSON.stringify(response));
+      socket.emit(Event.GENERAL, JSON.stringify(response));
     } else {
       game = game as Game;
       const player: Player = {
@@ -34,6 +37,7 @@ export default function joinGame(socket: SOCKET, message: object) {
       };
       game.players.push(player);
       const response: JoinGameResponse = {
+        method: ServerMethod.JOIN_GAME_RESPONSE,
         status: StatusCode.OK,
         game,
       };
@@ -45,8 +49,8 @@ export default function joinGame(socket: SOCKET, message: object) {
       };
 
       socket.join(game.id);
-      socket.emit(Namespace.GENERAL, JSON.stringify(response));
-      socket.to(game.id).emit(Namespace.GAME, JSON.stringify(broadcast));
+      socket.emit(Event.GENERAL, JSON.stringify(response));
+      socket.to(game.id).emit(Event.GAME, JSON.stringify(broadcast));
     }
   }
 }

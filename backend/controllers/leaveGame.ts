@@ -1,4 +1,5 @@
-import { GameQueueBroadcast, SOCKET, IO, ServerMethod, Namespace } from '../types';
+import { GameQueueBroadcast, ServerMethod, Event, Game } from '../../frontend/types';
+import { SOCKET, IO } from '../types';
 import endGame from './endGame';
 import games from '../games';
 
@@ -9,7 +10,7 @@ export default function leaveGame(io: IO, socket: SOCKET) {
     endGame(io, socket);
   } else {
     socket.rooms.forEach((gameId) => {
-      const game = games[gameId];
+      const game = games[gameId] as Game;
       if (!game || socket.id !== gameId) {
         return;
       }
@@ -19,7 +20,7 @@ export default function leaveGame(io: IO, socket: SOCKET) {
         method: ServerMethod.GAME_QUEUE_BROADCAST,
         players: game.players,
       };
-      socket.to(gameId).emit(Namespace.GAME, JSON.stringify(broadcast));
+      socket.to(gameId).emit(Event.GAME, JSON.stringify(broadcast));
       console.log('player left game');
     });
   }

@@ -1,13 +1,19 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { FirebaseDatabaseTypes } from '@react-native-firebase/database';
+import { Game } from '../types';
+import { Socket } from 'socket.io-client';
+import { DefaultEventsMap } from 'socket.io-client/build/cjs';
+
+export type GameContextValue = [Game, React.Dispatch<React.SetStateAction<Game>>];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SOCKET = Socket<DefaultEventsMap, DefaultEventsMap>
 
 export type reactStackParamList = {
   Home: undefined;
-  Game: {userReference: FirebaseDatabaseTypes.Reference, gameReference: FirebaseDatabaseTypes.Reference, user: FirebaseAuthTypes.User};
+  Game: undefined;
   CreateGame: undefined;
   HowToPlay: undefined;
-  WaitingQueue: { gameReference: FirebaseDatabaseTypes.Reference}; // we need to be connected to game before we route to this page    const theme = useContext(ThemeContext);
+  WaitingQueue: undefined;
 }
 
 export type homeProps = NativeStackScreenProps<reactStackParamList, 'Home'>;

@@ -1,3 +1,3 @@
-import { Games } from './types';
+import { Games } from '../frontend/types';
 
 export default {} as Games;

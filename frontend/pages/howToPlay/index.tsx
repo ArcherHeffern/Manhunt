@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text } from 'react-native';
-import { howToPlayProps } from '../../types';
+import { howToPlayProps } from '../../types/';
 
 export default function HowToPlay({ route, navigation }: howToPlayProps) {
   return (
