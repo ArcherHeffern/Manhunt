@@ -1,9 +1,9 @@
 import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
-import { createGameProps } from '../../types/';
+import { createGameProps, actionType } from '../../types/';
 import { GameSettings } from '../../types'
 import { connectionContext, gameContext } from '../../App';
-import { createGame, createGameListener } from './utils';
+import { createGame, createGameListener, getUsernameFromStorage, setUsernameInStorage } from './utils';
 import styles from './styles';
 
 const initialFormData: GameSettings = {
@@ -16,7 +16,7 @@ const initialFormData: GameSettings = {
   hotCold: false,
 };
 
-const formReducer = (state: GameSettings, action): GameSettings => {
+const formReducer = (state: GameSettings, action: actionType): GameSettings => {
   return {
     ...state,
     [action.name]: action.value || initialFormData[action.name],
@@ -32,6 +32,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
 
   useEffect(() => {
     createGameListener(io, setGame, navigation);
+    getUsernameFromStorage(setUsername);
   }, []);
 
 
@@ -39,6 +40,15 @@ export default function CreateGame({ route, navigation }: createGameProps) {
     <SafeAreaView style={styles.container}>
       <Text>Create Game</Text>
       <View style={styles.formContainer}>
+        <View style={styles.fieldContainer}>
+          <Text>Username</Text>
+          <TextInput
+            placeholder={username}
+            onChangeText={(val) => {
+              setUsername(val);
+            }}
+          />
+        </View>
         <View style={styles.fieldContainer}>
           <Text>Max Players</Text>
           <TextInput
@@ -109,7 +119,11 @@ export default function CreateGame({ route, navigation }: createGameProps) {
         </View>
       </View>
       <Text>FormData: {JSON.stringify(formData)}</Text>
-      <Button title='Create Game' onPress={() => createGame(io, formData)} />
+      <Button title='Create Game' onPress={() => {
+        createGame(io, formData, username)
+        setUsernameInStorage(username);
+      }
+      } />
     </SafeAreaView>
   );
 }
