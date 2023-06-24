@@ -1,6 +1,6 @@
-import React, { useReducer, useContext, useEffect } from 'react';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
-import { createGameProps, actionType } from '../../types/';
+import { createGameProps } from '../../types/';
 import { GameSettings } from '../../types'
 import { connectionContext, gameContext } from '../../App';
 import { createGame, createGameListener } from './utils';
@@ -16,7 +16,7 @@ const initialFormData: GameSettings = {
   hotCold: false,
 };
 
-const formReducer = (state: GameSettings, action: actionType): GameSettings => {
+const formReducer = (state: GameSettings, action): GameSettings => {
   return {
     ...state,
     [action.name]: action.value || initialFormData[action.name],
@@ -26,8 +26,9 @@ const formReducer = (state: GameSettings, action: actionType): GameSettings => {
 export default function CreateGame({ route, navigation }: createGameProps) {
 
   const [formData, formDispatch] = useReducer(formReducer, initialFormData);
+  const [username, setUsername] = useState('');
   const io = useContext(connectionContext);
-  const [game, setGame] = useContext(gameContext);
+  const [_, setGame] = useContext(gameContext);
 
   useEffect(() => {
     createGameListener(io, setGame, navigation);
