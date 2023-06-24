@@ -32,9 +32,7 @@ export enum ServerMethod {
   GAME_OVER_BROADCAST = 'gameOverBroadcast',
 }
 
-export interface ClientMessage {
-  method: ClientMethod;
-}
+export interface ClientMessage {}
 
 export interface ClientRequest extends ClientMessage {}
 
@@ -50,17 +48,14 @@ export interface ServerResponse extends ServerMessage {
 export interface ServerBroadcast extends ServerMessage {}
 
 // Create Game
-export interface CreateGameRequest extends ClientRequest {
-  username?: string;
-  gameSettings: GameSettings;
-}
 
 export function validateServerMessage(data: any, method: ServerMethod): boolean {
   if (typeof data !== 'object') {
+    console.log('not an object')
     return false;
    }
   const data2 = data as ServerMessage;
-  return method !== data2?.method
+  return method === data2?.method
 }
 
 
@@ -118,7 +113,7 @@ export function isGame(game: object): game is Game {
   );
 }
 
-type GameSettings = {
+export type GameSettings = {
   maxPlayers: number;
   numHunters: number;
   maxRounds: number;
@@ -141,6 +136,10 @@ function isGameSettings(settings: object): settings is GameSettings {
   );
 }
 
+export interface CreateGameRequest extends ClientRequest {
+  username?: string;
+  gameSettings: GameSettings;
+}
 
 export function isCreateGameRequest(message: object): message is CreateGameRequest {
   return isGameSettings((message as CreateGameRequest).gameSettings);

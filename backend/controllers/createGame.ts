@@ -8,9 +8,10 @@ export default function createGame(socket: SOCKET, message: object) {
       const response: CreateGameResponse = {
         method: ServerMethod.CREATE_GAME_RESPONSE,
         status: StatusCode.BAD_REQUEST,
+        message: 'User already has a game, and thus cannot create a new one',
       };
       // TODO: Check if user is already in room or already has a game and send error 
-      socket.emit(ServerMethod.CREATE_GAME_RESPONSE, JSON.stringify(response));
+      socket.emit(Event.GENERAL, JSON.stringify(response));
       return;
     }
     console.log('create new game');
@@ -50,14 +51,15 @@ export default function createGame(socket: SOCKET, message: object) {
       status: StatusCode.OK,
     };
 
-    socket.emit(Event.GAME, JSON.stringify(response));
+    socket.emit(Event.GENERAL, JSON.stringify(response));
     console.log('game created');
   } else {
     const response: CreateGameResponse = {
       method: ServerMethod.CREATE_GAME_RESPONSE,
       status: StatusCode.BAD_REQUEST,
+      message: 'Invalid request',
     };
-    console.log('bad request');
+    console.log('bad request - create game');
     socket.emit(Event.GENERAL, JSON.stringify(response));
   }
 }

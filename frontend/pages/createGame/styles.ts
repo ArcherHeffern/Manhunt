@@ -16,5 +16,14 @@ export default StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor: '#000',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+  }, 
+  fieldContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
   }
 });

@@ -11,7 +11,7 @@ import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
 import { ClientMethod } from '../frontend/types';
 
-const PORT = 8080;
+const PORT = 8000;
 
 const app = express();
 const server = http.createServer(app);
