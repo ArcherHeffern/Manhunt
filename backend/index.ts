@@ -9,7 +9,8 @@ import endGame from './controllers/endGame';
 import joinGame from './controllers/joinGame';
 import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
-import { ClientMethod } from '../frontend/types';
+import { getGames } from './controllers/dev';
+import { ClientMethod, DebugMethod } from '../frontend/types';
 
 const PORT = 8000;
 
@@ -29,6 +30,8 @@ io.on('connection', (socket: SOCKET) => {
   socket.on(ClientMethod.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
   socket.on(ClientMethod.LEAVE_GAME_MESSAGE, () => leaveGame(io as IO, socket as SOCKET));
   socket.on(ClientMethod.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
+
+  socket.on(DebugMethod.GET_GAMES, () => getGames(io as IO));
 
   socket.on('disconnecting', () => {
     leaveGame(io as IO, socket as SOCKET);

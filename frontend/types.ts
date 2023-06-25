@@ -10,6 +10,10 @@ export enum Event {
   RUNNER = 'runner',
 }
 
+export enum DebugMethod {
+  GET_GAMES = 'getGames',
+}
+
 export enum ClientMethod {
   CREATE_GAME_REQUEST = 'createGameRequest',
   JOIN_GAME_REQUEST = 'joinGameRequest',
