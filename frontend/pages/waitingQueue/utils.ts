@@ -3,6 +3,7 @@ import { Game, Event, validateServerMessage, ServerMethod, StatusCode, CreateGam
 
 export function createPlayerJoinListener(io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>) {
   io.on(Event.GAME, (data: object) => {
+    console.log('hit');
     data = JSON.parse(data as unknown as string);
     if (!validateServerMessage(data, ServerMethod.GAME_QUEUE_BROADCAST)) {
       console.log('Not a game queue broadcast');

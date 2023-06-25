@@ -1,18 +1,19 @@
 import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
 import { createGameProps, actionType } from '../../types/';
-import { GameSettings } from '../../types'
-import { connectionContext, gameContext } from '../../App';
+import { GameSettings, Event } from '../../types'
+import { gameContext } from '../../App';
+import socket from '../../socket';
 import { createGameEmitter, addCreateGameListener } from './utils';
 import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
 import styles from './styles';
 
 const initialFormData: GameSettings = {
-  maxPlayers: 0,
-  numHunters: 0,
+  maxPlayers: 5,
+  numHunters: 1,
   maxRounds: 1,
-  maxTime: 0,
-  gracePeriod: 0,
+  maxTime: 120,
+  gracePeriod: 60,
   showDistance: false,
   hotCold: false,
 };
@@ -28,12 +29,13 @@ export default function CreateGame({ route, navigation }: createGameProps) {
 
   const [formData, formDispatch] = useReducer(formReducer, initialFormData);
   const [username, setUsername] = useState('');
-  const io = useContext(connectionContext);
   const [_, setGame] = useContext(gameContext);
 
   useEffect(() => {
-    addCreateGameListener(io, setGame, navigation);
+    console.log(`io id: ${socket.id}`)
+    addCreateGameListener(socket, setGame, navigation);
     getUsernameFromStorage(setUsername);
+    console.log(`Listeners: ${socket.listeners(Event.GENERAL).length}`)
   }, []);
 
 
@@ -121,7 +123,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
       </View>
       <Text>FormData: {JSON.stringify(formData)}</Text>
       <Button title='Create Game' onPress={() => {
-        createGameEmitter(io, formData, username)
+        createGameEmitter(socket, formData, username)
         setUsernameInStorage(username);
       }
       } />

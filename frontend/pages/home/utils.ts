@@ -5,7 +5,7 @@ export function addJoinGameListener(navigation: homeProps['navigation'], io: SOC
   io.on(Event.GAME, (data: object) => {
     data = JSON.parse(data as unknown as string);
     if (!validateServerMessage(data, ServerMethod.JOIN_GAME_RESPONSE)) {
-      console.log('invalid server message');
+      console.log('not a join game response');
       return;
     }
     const data2 = data as JoinGameResponse;

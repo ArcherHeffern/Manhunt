@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { connectionContext, gameContext } from '../../App';
+import { gameContext } from '../../App';
+import socket from '../../socket';
 import { Button, View, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import styles from './styles';
 import { joinGameEmitter, addJoinGameListener } from './utils';
@@ -16,11 +17,10 @@ export default function JoinGameModal({ showModal, closeModal, navigation }: Pro
   const [gameCode, setGameCode] = useState('');
   const [username, setUsername] = useState('');
   const [errormessage, setErrorMessage] = useState(''); 
-  const io = useContext(connectionContext);
   const [_, setGame] = useContext(gameContext);
 
   useEffect(() => {
-        addJoinGameListener(navigation, io, setGame, setErrorMessage, closeModal);
+        addJoinGameListener(navigation, socket, setGame, setErrorMessage, closeModal);
         getUsernameFromStorage(setUsername);
     }, []);
 
@@ -54,7 +54,7 @@ export default function JoinGameModal({ showModal, closeModal, navigation }: Pro
               disabled={!gameCode}
               title='Join Game'
               onPress={() => {
-                joinGameEmitter(io, gameCode, username);
+                joinGameEmitter(socket, gameCode, username);
                 setUsernameInStorage(username);
                 }} />
               <Button title='Cancel' onPress={() => closeModal()} />

@@ -12,6 +12,7 @@ export enum Event {
 
 export enum DebugMethod {
   GET_GAMES = 'getGames',
+  SEND_TO_ROOM = 'sendToRoom',
 }
 
 export enum ClientMethod {

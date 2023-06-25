@@ -8,35 +8,41 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { reactStackParamList } from './types/';
 import { Event } from './types';
-import { connectionContext } from './App';
+import socket from './socket';
 
 const Stack = createNativeStackNavigator<reactStackParamList>();
 export default function Routing() {
 
-  const io = useContext(connectionContext);
-
   useEffect(() => {
-    if (!io) {
+    // @ts-ignore
+    if (!socket) {
       console.log("not connected to the server")
       return;
     }
     console.log("connected to the server")
-    io.on(Event.GENERAL, (data: any) => {
+    socket.on(Event.GENERAL, (data: any) => {
       console.log('data from server: under the general event', data);
     })
 
-    io.on(Event.GAME, (data: any) => {
+    socket.on(Event.GAME, (data: any) => {
       console.log('data from server: under the game event', data);
     })
 
-    io.on(Event.HUNTER, (data: any) => {
+    socket.on(Event.HUNTER, (data: any) => {
       console.log('data from server: under the hunter event', data);
     })
 
-    io.on(Event.RUNNER, (data: any) => {
+    socket.on(Event.RUNNER, (data: any) => {
       console.log('data from server: under the runner event', data);
     })
-  }, [io])
+    return () => {
+      console.log("disconnected from the server");
+      socket.off(Event.GENERAL);
+      socket.off(Event.GAME);
+      socket.off(Event.HUNTER);
+      socket.off(Event.RUNNER);
+    }
+  }, [])
   return <>
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home'>
