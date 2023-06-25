@@ -3,7 +3,8 @@ import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-nativ
 import { createGameProps, actionType } from '../../types/';
 import { GameSettings } from '../../types'
 import { connectionContext, gameContext } from '../../App';
-import { createGame, createGameListener, getUsernameFromStorage, setUsernameInStorage } from './utils';
+import { createGameEmitter, addCreateGameListener } from './utils';
+import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
 import styles from './styles';
 
 const initialFormData: GameSettings = {
@@ -31,7 +32,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
   const [_, setGame] = useContext(gameContext);
 
   useEffect(() => {
-    createGameListener(io, setGame, navigation);
+    addCreateGameListener(io, setGame, navigation);
     getUsernameFromStorage(setUsername);
   }, []);
 
@@ -120,7 +121,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
       </View>
       <Text>FormData: {JSON.stringify(formData)}</Text>
       <Button title='Create Game' onPress={() => {
-        createGame(io, formData, username)
+        createGameEmitter(io, formData, username)
         setUsernameInStorage(username);
       }
       } />

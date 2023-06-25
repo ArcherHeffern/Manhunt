@@ -28,7 +28,7 @@ export default function joinGame(socket: SOCKET, message: object) {
         status: StatusCode.BAD_REQUEST,
         message: resMessage,
       };
-      socket.emit(Event.GENERAL, JSON.stringify(response));
+      socket.emit(Event.GAME, JSON.stringify(response));
     } else {
       game = game as Game;
       const player: Player = {
@@ -49,7 +49,7 @@ export default function joinGame(socket: SOCKET, message: object) {
       };
 
       socket.join(game.id);
-      socket.emit(Event.GENERAL, JSON.stringify(response));
+      socket.emit(Event.GAME, JSON.stringify(response));
       socket.to(game.id).emit(Event.GAME, JSON.stringify(broadcast));
     }
   }
