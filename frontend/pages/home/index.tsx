@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Button, View, StyleSheet, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { SafeAreaView, Button, View, Text } from 'react-native';
 import { homeProps } from '../../types/';
 import JoinGameModal from './joinGameModal';
 import styles from './styles';
+import socket from '../../socket';
+import { ClientEvent } from '../../types';
+import { GameContext } from '../../GameProvider';
 
 export default function Home({ route, navigation }: homeProps) {
 
   const [showModal, setShowModal] = useState(false);
+  const {game, setGame} = useContext(GameContext);
 
   function openModal() {
     setShowModal(true);
@@ -15,6 +19,18 @@ export default function Home({ route, navigation }: homeProps) {
   function closeModal() {
     setShowModal(false);
   }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+    console.log(game);
+    if (game) {
+    socket.emit(ClientEvent.LEAVE_GAME_MESSAGE, { gameId: game.id });
+    console.log('leaving game');
+    } else {
+    console.log('not in game');
+    }});
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,7 +42,7 @@ export default function Home({ route, navigation }: homeProps) {
         <Button title='How to Play' onPress={() => navigation.navigate('HowToPlay')} />
       </View >
       <View>
-        <Text>Advertisement </Text>
+        <Text>Advertisement</Text>
       </View>
     </SafeAreaView>
   );

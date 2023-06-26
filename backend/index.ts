@@ -26,15 +26,15 @@ const io = new Server(server, {
 io.on('connection', (socket: SOCKET) => {
  
   socket.on(ClientEvent.CREATE_GAME_REQUEST, (message: object) => createGame(socket, message));
-  socket.on(ClientEvent.END_GAME_MESSAGE, () => endGame(io, socket));
+  socket.on(ClientEvent.END_GAME_MESSAGE, () => endGame(socket));
   socket.on(ClientEvent.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
-  socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(io as IO, socket as SOCKET));
+  socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(socket as SOCKET));
   socket.on(ClientEvent.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
 
-  socket.on(DebugEvent.GET_GAMES, () => getGames(io as IO));
+  socket.on(DebugEvent.GET_GAMES, () => getGames(socket));
 
   socket.on('disconnecting', () => {
-    leaveGame(io as IO, socket as SOCKET);
+    leaveGame(socket);
   });
 
 });

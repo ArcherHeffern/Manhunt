@@ -1,9 +1,3 @@
-
-export enum DebugEvent {
-  GET_GAMES = 'getGames',
-  SEND_TO_ROOM = 'sendToRoom',
-}
-
 export enum ClientEvent {
   CREATE_GAME_REQUEST = 'createGameRequest',
   JOIN_GAME_REQUEST = 'joinGameRequest',
@@ -26,21 +20,22 @@ export enum ServerEvent {
   GAME_OVER_BROADCAST = 'gameOverBroadcast',
 }
 
-export interface ClientMessage {}
+export enum DebugEvent {
+  GET_GAMES = 'getGames',
+  SEND_TO_ROOM = 'sendToRoom',
+}
 
-export interface ClientRequest extends ClientMessage {}
-
-export interface ServerMessage {
+export interface Message {
   message?: string;
 }
 
-export interface ServerResponse extends ServerMessage {
+export interface Broadcast extends Message {}
+
+export interface Request {}
+
+export interface Response extends Message {
   status: StatusCode;
 }
-
-export interface ServerBroadcast extends ServerMessage {}
-
-// Create Game
 
 export enum StatusCode {
   OK = 200,
@@ -119,7 +114,8 @@ function isGameSettings(settings: object): settings is GameSettings {
   );
 }
 
-export interface CreateGameRequest extends ClientRequest {
+// Create game
+export interface CreateGameRequest extends Request {
   username?: string;
   gameSettings: GameSettings;
 }
@@ -128,13 +124,13 @@ export function isCreateGameRequest(message: object): message is CreateGameReque
   return isGameSettings((message as CreateGameRequest).gameSettings);
 }
 
-export interface CreateGameResponse extends ServerResponse {
+export interface CreateGameResponse extends Response {
   game?: Game;
 }
 
 // Queue
 
-export interface JoinGameRequest extends ClientRequest {
+export interface JoinGameRequest extends Request {
   gameId: string;
   username?: string;
 }
@@ -143,43 +139,43 @@ export function isJoinGameRequest(message: object): message is JoinGameRequest {
   return typeof (message as JoinGameRequest).gameId === 'string'
   && (typeof (message as JoinGameRequest).username === 'string' || (message as JoinGameRequest).username === undefined);
 }
-export interface JoinGameResponse extends ServerResponse {
+export interface JoinGameResponse extends Response {
   game?: Game;
 }
-export interface LeaveGameMessage extends ClientMessage {}
-export interface GameQueueBroadcast extends ServerBroadcast {
+export interface LeaveGameMessage extends Message {}
+export interface GameQueueBroadcast extends Broadcast {
   players: Player[];
 }
 
 // Start Game
 
-export interface StartGameMessage extends ClientMessage {}
-export interface StartingGameBroadcast extends ServerBroadcast {}
+export interface StartGameMessage extends Message {}
+export interface StartingGameBroadcast extends Broadcast {}
 
 // Game Running 
 // Grace
-export interface GracePeriodBroadcast extends ServerBroadcast {
+export interface GracePeriodBroadcast extends Broadcast {
   time: number; // seconds
 }
-export interface ClientSidePlayerLocationMessage extends ClientMessage {
+export interface ClientSidePlayerLocationMessage extends Message {
   location: string;
 }
 
 export function isClientSidePlayerLocationMessage(message: object): message is ClientSidePlayerLocationMessage {
   return typeof (message as ClientSidePlayerLocationMessage).location === 'string';
 }
-export interface ServerSidePlayerLocationMessage extends ServerMessage {
+export interface ServerSidePlayerLocationMessage extends Message {
   distance?: number;
   direction?: string; 
 }
 
-export interface PlayerFoundMessage extends ClientMessage {}
-export interface PlayerFoundBroadcast extends ServerBroadcast {
+export interface PlayerFoundMessage extends Message {}
+export interface PlayerFoundBroadcast extends Broadcast {
   playerName: string;
   numRemaining: number;
 }
 
 // Game Over
-export interface GameOverBroadcast extends ServerBroadcast {
+export interface GameOverBroadcast extends Broadcast {
   winner: string;
 }

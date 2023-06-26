@@ -1,18 +1,19 @@
 import React, { useEffect, useContext } from 'react';
 import { SafeAreaView, Text, FlatList } from 'react-native';
 import { waitingQueueProps } from '../../types/';
-import { ServerEvent } from '../../types';
-import { gameContext } from '../../App';
+import { ServerEvent, ClientEvent } from '../../types';
+import { GameContext } from '../../GameProvider';
 import styles from './styles';
 import { createPlayerJoinListener } from './utils';
 import socket from '../../socket';
 
 export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
 
-  const [ game, setGame ] = useContext(gameContext);
+  const { game, setGame } = useContext(GameContext);
 
   useEffect(() => {
     createPlayerJoinListener(socket, setGame);
+    console.log(JSON.stringify(game));
     // createPlayerLeaveListener(io, setGame);
     // createGameStartListener(io, setGame);
     return () => {

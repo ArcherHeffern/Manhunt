@@ -1,6 +1,4 @@
-import React, { createContext, useEffect } from 'react';
-import { Game as _Game } from './types';
-import { GameContextValue } from './types/';
+import React, { useEffect } from 'react';
 import Home from './pages/home';
 import Game from './pages/game';
 import CreateGame from './pages/createGame';
@@ -9,17 +7,25 @@ import WaitingQueue from './pages/waitingQueue';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { reactStackParamList } from './types/';
-import socket from './socket';
+import { GameProvider } from './GameProvider';
 
-export const gameContext = createContext<GameContextValue|null>(null);
 const Stack = createNativeStackNavigator<reactStackParamList>();
 
 export default function App() {
 
-  const [game, setGame] = React.useState<_Game>(null);
+  useEffect(() => {
+    console.log('rerender');
+  });
+
+  useEffect(() => {
+    console.log('app mounted');
+    return () => {
+      console.log('app unmounted');
+    }
+  }, []); // empty array means only run on moun
 
   return (
-    <gameContext.Provider value={[game, setGame]}>
+    <GameProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Home'>
           <Stack.Screen name='Home' component={Home} />
@@ -29,7 +35,7 @@ export default function App() {
           <Stack.Screen name='Game' component={Game} />
         </Stack.Navigator>
       </NavigationContainer>
-    </gameContext.Provider>
+    </GameProvider>
   );
 }
 

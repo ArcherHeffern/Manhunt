@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { gameContext } from '../../App';
+import { GameContext } from '../../GameProvider';
 import socket from '../../socket';
 import { Button, View, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import styles from './styles';
@@ -18,7 +18,7 @@ export default function JoinGameModal({ showModal, closeModal, navigation }: Pro
   const [gameCode, setGameCode] = useState('');
   const [username, setUsername] = useState('');
   const [errormessage, setErrorMessage] = useState(''); 
-  const [_, setGame] = useContext(gameContext);
+  const {game, setGame} = useContext(GameContext);
 
   useEffect(() => {
         addJoinGameListener(navigation, socket, setGame, setErrorMessage, closeModal);

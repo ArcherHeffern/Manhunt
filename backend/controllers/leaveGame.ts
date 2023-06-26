@@ -1,13 +1,13 @@
 import { GameQueueBroadcast, ServerEvent, Game } from '../../frontend/types';
-import { SOCKET, IO } from '../types';
+import { SOCKET } from '../types';
 import endGame from './endGame';
 import games from '../games';
 
-export default function leaveGame(io: IO, socket: SOCKET) {
+export default function leaveGame(socket: SOCKET) {
   // find the room that is not the users socket.id, or if the size is 1, then just use that but also delete the game or handle accordingly since
   // the user is the owner
   if (socket.rooms.size === 1) {
-    endGame(io, socket);
+    endGame(socket);
   } else {
     socket.rooms.forEach((gameId) => {
       const game = games[gameId] as Game;

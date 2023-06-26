@@ -2,7 +2,7 @@ import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
 import { createGameProps, actionType } from '../../types/';
 import { GameSettings, ServerEvent } from '../../types'
-import { gameContext } from '../../App';
+import { GameContext } from '../../GameProvider';
 import socket from '../../socket';
 import { createGameEmitter, addCreateGameListener } from './utils';
 import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
@@ -29,7 +29,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
 
   const [formData, formDispatch] = useReducer(formReducer, initialFormData);
   const [username, setUsername] = useState('');
-  const [_, setGame] = useContext(gameContext);
+  const {game, setGame} = useContext(GameContext);
 
   useEffect(() => {
     addCreateGameListener(socket, setGame, navigation);

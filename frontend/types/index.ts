@@ -4,9 +4,8 @@ import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/cjs';
 import { GameSettings } from '../types';
 
-export type GameContextValue = [Game, React.Dispatch<React.SetStateAction<Game>>];
+export type GameContextValue = {game: Game, setGame: React.Dispatch<React.SetStateAction<Game>>};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SOCKET = Socket<DefaultEventsMap, DefaultEventsMap>
 
 export type reactStackParamList = {
