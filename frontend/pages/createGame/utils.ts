@@ -1,4 +1,4 @@
-import { ClientMethod, ServerMethod, Event, validateServerMessage, CreateGameResponse, StatusCode, Game } from '../../types';
+import { ClientEvent, ServerEvent, CreateGameResponse, StatusCode, Game } from '../../types';
 import { createGameProps, SOCKET } from '../../types/';
 import { GameSettings, CreateGameRequest } from '../../types';
 
@@ -9,24 +9,20 @@ export function createGameEmitter(io: SOCKET, gameSettings: GameSettings, userna
   if (username) {
     gameRequest.username = username;
   }
-  io.emit(ClientMethod.CREATE_GAME_REQUEST, gameRequest);
+  io.emit(ClientEvent.CREATE_GAME_REQUEST, gameRequest);
   console.log('emitted create game request');
 }
 
 export function addCreateGameListener(io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>, navigation: createGameProps['navigation']) {
-  io.on(Event.GENERAL, (data: object) => {
+  io.on(ServerEvent.CREATE_GAME_RESPONSE, (data: CreateGameResponse) => {
     data = JSON.parse(data as unknown as string);
-  if (!validateServerMessage(data, ServerMethod.CREATE_GAME_RESPONSE)) {
-    console.log('invalid server message');
-    return;
-  }
-  const data2 = data as CreateGameResponse;
-  if (data2.status === StatusCode.OK) {
+  if (data.status === StatusCode.OK) {
     console.log('game created successfully');
-    setGame(data2.game);
+    setGame(data.game);
+    navigation.popToTop();
     navigation.navigate('WaitingQueue');
   } else {
-    console.log('error creating game: ', data2.message);
+    console.log('error creating game: ', data.message);
   }
   })
 }

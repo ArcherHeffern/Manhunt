@@ -1,7 +1,7 @@
 import { IO } from '../types';
-import { Event } from '../../frontend/types';
+import { DebugEvent } from '../../frontend/types';
 import games from '../games';
 
 export function getGames(socket: IO) {
-  socket.emit(Event.GAME, JSON.stringify(games));
+  socket.emit(DebugEvent.GET_GAMES, JSON.stringify(games));
 }

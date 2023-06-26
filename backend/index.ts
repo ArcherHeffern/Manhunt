@@ -10,7 +10,7 @@ import joinGame from './controllers/joinGame';
 import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
 import { getGames } from './controllers/dev';
-import { ClientMethod, DebugMethod } from '../frontend/types';
+import { ClientEvent, DebugEvent} from '../frontend/types';
 
 const PORT = 8000;
 
@@ -25,13 +25,13 @@ const io = new Server(server, {
 
 io.on('connection', (socket: SOCKET) => {
  
-  socket.on(ClientMethod.CREATE_GAME_REQUEST, (message: object) => createGame(socket, message));
-  socket.on(ClientMethod.END_GAME_MESSAGE, () => endGame(io, socket));
-  socket.on(ClientMethod.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
-  socket.on(ClientMethod.LEAVE_GAME_MESSAGE, () => leaveGame(io as IO, socket as SOCKET));
-  socket.on(ClientMethod.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
+  socket.on(ClientEvent.CREATE_GAME_REQUEST, (message: object) => createGame(socket, message));
+  socket.on(ClientEvent.END_GAME_MESSAGE, () => endGame(io, socket));
+  socket.on(ClientEvent.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
+  socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(io as IO, socket as SOCKET));
+  socket.on(ClientEvent.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
 
-  socket.on(DebugMethod.GET_GAMES, () => getGames(io as IO));
+  socket.on(DebugEvent.GET_GAMES, () => getGames(io as IO));
 
   socket.on('disconnecting', () => {
     leaveGame(io as IO, socket as SOCKET);

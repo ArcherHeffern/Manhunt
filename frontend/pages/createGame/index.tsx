@@ -1,7 +1,7 @@
 import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
 import { createGameProps, actionType } from '../../types/';
-import { GameSettings, Event } from '../../types'
+import { GameSettings, ServerEvent } from '../../types'
 import { gameContext } from '../../App';
 import socket from '../../socket';
 import { createGameEmitter, addCreateGameListener } from './utils';
@@ -32,10 +32,12 @@ export default function CreateGame({ route, navigation }: createGameProps) {
   const [_, setGame] = useContext(gameContext);
 
   useEffect(() => {
-    console.log(`io id: ${socket.id}`)
     addCreateGameListener(socket, setGame, navigation);
     getUsernameFromStorage(setUsername);
-    console.log(`Listeners: ${socket.listeners(Event.GENERAL).length}`)
+
+    return () => {
+      socket.off(ServerEvent.CREATE_GAME_RESPONSE);
+    }
   }, []);
 
 

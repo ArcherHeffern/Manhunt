@@ -1,23 +1,19 @@
 import { SOCKET, homeProps } from "../../types/";
-import { ClientMethod, Event, Game, JoinGameRequest, JoinGameResponse, ServerMethod, StatusCode, validateServerMessage } from "../../types";
+import { ServerEvent, ClientEvent, Game, JoinGameRequest, JoinGameResponse, StatusCode } from "../../types";
 
 export function addJoinGameListener(navigation: homeProps['navigation'], io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>, setErrorMessage: React.Dispatch<React.SetStateAction<string>>, closeModal: () => void) {
-  io.on(Event.GAME, (data: object) => {
+  io.on(ServerEvent.JOIN_GAME_RESPONSE, (data: JoinGameResponse) => {
     data = JSON.parse(data as unknown as string);
-    if (!validateServerMessage(data, ServerMethod.JOIN_GAME_RESPONSE)) {
-      console.log('not a join game response');
-      return;
-    }
-    const data2 = data as JoinGameResponse;
-    if (data2.status === StatusCode.OK) {
+    if (data.status === StatusCode.OK) {
       console.log('game joined successfully');
-      setGame(data2.game);
+      setGame(data.game);
       closeModal();
+      navigation.popToTop();
       navigation.navigate('WaitingQueue');
     }
     else {
-      console.log('error joining game: ', data2.message);
-      setErrorMessage(data2.message);
+      console.log('error joining game: ', data.message);
+      setErrorMessage(data.message);
     }
   }
   )
@@ -28,6 +24,6 @@ export function joinGameEmitter(io: SOCKET, gameCode: string, username: string) 
     gameId: gameCode,
     username
   }
-  io.emit(ClientMethod.JOIN_GAME_REQUEST, joinGameRequest);
+  io.emit(ClientEvent.JOIN_GAME_REQUEST, joinGameRequest);
   console.log('emitted join game request');
 }

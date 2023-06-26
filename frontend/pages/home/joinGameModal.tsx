@@ -5,6 +5,7 @@ import { Button, View, Text, Modal, TextInput, TouchableWithoutFeedback, Keyboar
 import styles from './styles';
 import { joinGameEmitter, addJoinGameListener } from './utils';
 import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
+import { ServerEvent } from '../../types';
 
 interface Props {
     showModal: boolean;
@@ -22,6 +23,10 @@ export default function JoinGameModal({ showModal, closeModal, navigation }: Pro
   useEffect(() => {
         addJoinGameListener(navigation, socket, setGame, setErrorMessage, closeModal);
         getUsernameFromStorage(setUsername);
+
+        return () => {
+          socket.off(ServerEvent.JOIN_GAME_RESPONSE);
+        }
     }, []);
 
     return ( showModal &&

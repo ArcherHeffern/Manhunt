@@ -1,4 +1,4 @@
-import { GameQueueBroadcast, ServerMethod, Event, Game } from '../../frontend/types';
+import { GameQueueBroadcast, ServerEvent, Game } from '../../frontend/types';
 import { SOCKET, IO } from '../types';
 import endGame from './endGame';
 import games from '../games';
@@ -17,10 +17,9 @@ export default function leaveGame(io: IO, socket: SOCKET) {
       socket.leave(gameId);
       game.players = game.players.filter(player => player.id !== socket.id);
       const broadcast: GameQueueBroadcast = {
-        method: ServerMethod.GAME_QUEUE_BROADCAST,
         players: game.players,
       };
-      socket.to(gameId).emit(Event.GAME, JSON.stringify(broadcast));
+      socket.to(gameId).emit(ServerEvent.GAME_QUEUE_BROADCAST, JSON.stringify(broadcast));
       console.log('player left game');
     });
   }

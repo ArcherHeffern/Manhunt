@@ -1,21 +1,10 @@
 
-export type Clients = {
-  [key: string]: WebSocket;
-};
-
-export enum Event {
-  GENERAL = 'general',
-  GAME = 'game',
-  HUNTER = 'hunter',
-  RUNNER = 'runner',
-}
-
-export enum DebugMethod {
+export enum DebugEvent {
   GET_GAMES = 'getGames',
   SEND_TO_ROOM = 'sendToRoom',
 }
 
-export enum ClientMethod {
+export enum ClientEvent {
   CREATE_GAME_REQUEST = 'createGameRequest',
   JOIN_GAME_REQUEST = 'joinGameRequest',
   LEAVE_GAME_MESSAGE = 'leaveGameMessage',
@@ -25,7 +14,7 @@ export enum ClientMethod {
   END_GAME_MESSAGE = 'endGameMessage',
 }
 
-export enum ServerMethod {
+export enum ServerEvent {
   CONNECT_RESPONSE = 'connectResponse',
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_RESPONSE = 'joinGameResponse',
@@ -42,7 +31,6 @@ export interface ClientMessage {}
 export interface ClientRequest extends ClientMessage {}
 
 export interface ServerMessage {
-  method: ServerMethod;
   message?: string;
 }
 
@@ -53,16 +41,6 @@ export interface ServerResponse extends ServerMessage {
 export interface ServerBroadcast extends ServerMessage {}
 
 // Create Game
-
-export function validateServerMessage(data: any, method: ServerMethod): boolean {
-  if (typeof data !== 'object') {
-    console.log('not an object')
-    return false;
-   }
-  const data2 = data as ServerMessage;
-  return method === data2?.method
-}
-
 
 export enum StatusCode {
   OK = 200,
@@ -170,7 +148,6 @@ export interface JoinGameResponse extends ServerResponse {
 }
 export interface LeaveGameMessage extends ClientMessage {}
 export interface GameQueueBroadcast extends ServerBroadcast {
-  method: ServerMethod.GAME_QUEUE_BROADCAST;
   players: Player[];
 }
 
