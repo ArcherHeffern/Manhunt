@@ -3,6 +3,7 @@ import { SOCKET } from '../types';
 import games from '../games';
 
 export default function joinGame(socket: SOCKET, message: object) {
+  console.log('join game request received');
   if (isJoinGameRequest(message)) {
     let game = games[message.gameId] as Game;
     let resMessage = '';

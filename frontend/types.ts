@@ -14,10 +14,11 @@ export enum ServerEvent {
   JOIN_GAME_RESPONSE = 'joinGameResponse',
   GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
   GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
-  STARTING_GAME_BROADCAST = 'startingGameBroadcast',
+  GAME_START_BROADCAST = 'gameStartBroadcast',
   PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
   PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
-  GAME_OVER_BROADCAST = 'gameOverBroadcast',
+  GAME_END_BROADCAST = 'gameEndBroadcast', // for when the game ends prematurely - either in queue or in game
+  GAME_OVER_BROADCAST = 'gameOverBroadcast', // for when the game ends normally
 }
 
 export enum DebugEvent {
@@ -72,8 +73,6 @@ export type Game = {
   settings: GameSettings;
 }
 
-export type Games = { [key: string]: Game|undefined };
-
 export function isGame(game: object): game is Game {
   return (
     game instanceof Object &&
@@ -90,6 +89,8 @@ export function isGame(game: object): game is Game {
     isGameSettings((game as Game).settings)
   );
 }
+
+export type Games = { [key: string]: Game|undefined };
 
 export type GameSettings = {
   maxPlayers: number;

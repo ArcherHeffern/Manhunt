@@ -13,24 +13,13 @@ const Stack = createNativeStackNavigator<reactStackParamList>();
 
 export default function App() {
 
-  useEffect(() => {
-    console.log('rerender');
-  });
-
-  useEffect(() => {
-    console.log('app mounted');
-    return () => {
-      console.log('app unmounted');
-    }
-  }, []); // empty array means only run on moun
-
   return (
     <GameProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Home'>
-          <Stack.Screen name='Home' component={Home} />
-          <Stack.Screen name='HowToPlay' component={HowToPlay} />
-          <Stack.Screen name='CreateGame' component={CreateGame} />
+        <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
+          <Stack.Screen name='Home' component={Home} options={{headerShown: true}}/>
+          <Stack.Screen name='HowToPlay' component={HowToPlay} options={{headerShown: true}}/>
+          <Stack.Screen name='CreateGame' component={CreateGame} options={{headerShown: true}}/>
           <Stack.Screen name='WaitingQueue' component={WaitingQueue} />
           <Stack.Screen name='Game' component={Game} />
         </Stack.Navigator>

@@ -20,18 +20,6 @@ export default function Home({ route, navigation }: homeProps) {
     setShowModal(false);
   }
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-    console.log(game);
-    if (game) {
-    socket.emit(ClientEvent.LEAVE_GAME_MESSAGE, { gameId: game.id });
-    console.log('leaving game');
-    } else {
-    console.log('not in game');
-    }});
-    return unsubscribe;
-  }, [navigation]);
-
   return (
     <SafeAreaView style={styles.container}>
       <JoinGameModal {...{showModal, closeModal, navigation}} />

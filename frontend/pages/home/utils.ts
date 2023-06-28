@@ -8,7 +8,6 @@ export function addJoinGameListener(navigation: homeProps['navigation'], io: SOC
       console.log('game joined successfully');
       setGame(data.game);
       closeModal();
-      navigation.popToTop();
       navigation.navigate('WaitingQueue');
     }
     else {

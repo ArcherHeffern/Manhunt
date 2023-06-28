@@ -1,10 +1,20 @@
-import { SOCKET } from '../types';
+import { SOCKET, IO } from '../types';
+import { ServerEvent } from '../../frontend/types';
 import games from '../games';
 
-export default function endGame(socket: SOCKET) {
-  delete games[socket.id];
-  // TODO: find a way to iterate over all clients - general message them, and then disconnect them
-  socket.local.socketsLeave(socket.id);
+export default function endGame(io: IO, socket: SOCKET) {
+  if (!games[socket.id]) {
+    return;
+  }
+  const gameId = socket.id;
+  delete games[gameId];
+  io.to(gameId).emit(ServerEvent.GAME_END_BROADCAST);
+  const clients = io.sockets.adapter.rooms.get(gameId) || new Set();
+  for (const clientId of clients) {
+    const clientSocket = io.sockets.sockets.get(clientId);
+    clientSocket?.leave('Other Room');
+  }
   console.log('game ended');
   return;
+
 }
