@@ -29,4 +29,4 @@ node/express (server), Socket.io (full duplex communication), mongoDB (saving ga
 Frontend:
 expo/react native
 
-https://jamboard.google.com/d/1sb4QMX9r4g4-6h80OtIz6TV5eNWyPztaeuTQXJQWV_E/edit?usp=sharing
+<a href='https://jamboard.google.com/d/1sb4QMX9r4g4-6h80OtIz6TV5eNWyPztaeuTQXJQWV_E/edit?usp=sharing' target='_blank'>Jamboard</a>
