@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from 'react';
 import { SafeAreaView, Text, FlatList, Button, View } from 'react-native';
 import { waitingQueueProps } from '../../types/';
-import { ServerEvent } from '../../types';
 import { GameContext } from '../../GameProvider';
 import styles from './styles';
 import { gameQueueBroadcastListener, createGameStartListener, createStartGameListener, startGame, leaveGame, endGame, createGameEndListener } from './utils';
@@ -15,15 +14,15 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
   const owner = game.id === socket.id;
 
   useEffect(() => {
-    gameQueueBroadcastListener(socket, setGame);
-    createGameStartListener(socket, navigation, setCountdown, setGame);
-    createStartGameListener(socket, setErrorMessage);
-    createGameEndListener(socket, navigation);
+    const unsubscribe1 = gameQueueBroadcastListener(setGame);
+    const unsubscribe2 = createGameStartListener(navigation, setCountdown, setGame);
+    const unsubscribe3 = createStartGameListener(setErrorMessage);
+    const unsubscribe4 = createGameEndListener(navigation);
     return () => {
-      socket.off(ServerEvent.GAME_QUEUE_BROADCAST);
-      socket.off(ServerEvent.START_GAME_RESPONSE);
-      socket.off(ServerEvent.GAME_START_BROADCAST);
-      socket.off(ServerEvent.GAME_END_BROADCAST);
+      unsubscribe1();
+      unsubscribe2();
+      unsubscribe3();
+      unsubscribe4();
     }
   }, []);
 
@@ -39,11 +38,11 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
       <View>
         <Text>{countdown?`Starting in ${countdown}`:''}</Text>
         <Text>{errormessage}</Text>
-        {owner && <Button title='Start Game' onPress={() => startGame(socket)} />}
+        {owner && <Button title='Start Game' onPress={() => startGame()} />}
         {owner?
-          <Button title='End Game' onPress={() => endGame(socket)} />
+          <Button title='End Game' onPress={() => endGame()} />
           :
-          <Button title='Leave Game' onPress={() => leaveGame(navigation, socket)} />  
+          <Button title='Leave Game' onPress={() => leaveGame(navigation)} />  
       }
       </View>
     </SafeAreaView>

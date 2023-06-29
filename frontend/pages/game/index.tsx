@@ -1,10 +1,18 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { SafeAreaView, Button, View, StyleSheet, Text } from 'react-native';
 import { gameProps } from '../../types/';
 import styles from './styles';
 import { GameContext } from '../../GameProvider';
+import { createGameEndListener } from './utils';
 
 export default function Game({ route, navigation }: gameProps) {
+
+  useEffect(() => {
+    const unsubscribe = createGameEndListener(navigation);
+    return () => {
+      unsubscribe();
+    }
+  })
 
   const role = route.params.role;
 

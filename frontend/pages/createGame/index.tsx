@@ -1,9 +1,8 @@
 import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch } from 'react-native';
 import { createGameProps, actionType } from '../../types/';
-import { GameSettings, ServerEvent } from '../../types'
+import { GameSettings } from '../../types'
 import { GameContext } from '../../GameProvider';
-import socket from '../../socket';
 import { createGameEmitter, addCreateGameListener } from './utils';
 import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
 import styles from './styles';
@@ -32,11 +31,11 @@ export default function CreateGame({ route, navigation }: createGameProps) {
   const {game, setGame} = useContext(GameContext);
 
   useEffect(() => {
-    addCreateGameListener(socket, setGame, navigation);
+    const unsubscribe = addCreateGameListener(setGame, navigation);
     getUsernameFromStorage(setUsername);
 
     return () => {
-      socket.off(ServerEvent.CREATE_GAME_RESPONSE);
+      unsubscribe();
     }
   }, []);
 
@@ -125,7 +124,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
       </View>
       <Text>FormData: {JSON.stringify(formData)}</Text>
       <Button title='Create Game' onPress={() => {
-        createGameEmitter(socket, formData, username)
+        createGameEmitter(formData, username)
         setUsernameInStorage(username);
       }
       } />

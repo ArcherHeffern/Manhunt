@@ -1,8 +1,12 @@
-import { SOCKET, waitingQueueProps } from '../../types/';
+import { waitingQueueProps } from '../../types/';
 import { Game, ServerEvent, ClientEvent, GameQueueBroadcast, Role, GameStartBroadcast, StartGameResponse, StatusCode, GameStatus } from '../../types';
+import { createGameEndListener } from '../../common';
+import socket from '../../socket';
 
-export function gameQueueBroadcastListener(io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>) {
-  io.on(ServerEvent.GAME_QUEUE_BROADCAST, (data: GameQueueBroadcast) => {
+export { createGameEndListener };
+
+export function gameQueueBroadcastListener(setGame: React.Dispatch<React.SetStateAction<Game>>) {
+  socket.on(ServerEvent.GAME_QUEUE_BROADCAST, (data: GameQueueBroadcast) => {
     console.log('game queue broadcast received');
     data = JSON.parse(data as unknown as string);
     setGame((game) => {
@@ -12,9 +16,12 @@ export function gameQueueBroadcastListener(io: SOCKET, setGame: React.Dispatch<R
       }
     });
   })
+  return () => {
+    socket.off(ServerEvent.GAME_QUEUE_BROADCAST);
+  }
 }
 
-export function createStartGameListener(socket: SOCKET, setErrormessage: React.Dispatch<React.SetStateAction<string>>) {
+export function createStartGameListener(setErrormessage: React.Dispatch<React.SetStateAction<string>>) {
   socket.on(ServerEvent.START_GAME_RESPONSE, (message: StartGameResponse) => {
     console.log('start game response received');
     if (message.status === StatusCode.OK) {
@@ -23,10 +30,13 @@ export function createStartGameListener(socket: SOCKET, setErrormessage: React.D
       setErrormessage(message.message);
     }
   })
+  return () => {
+    return socket.off(ServerEvent.START_GAME_RESPONSE);
+  }
 }
 
-export function createGameStartListener(io: SOCKET, navigation: waitingQueueProps['navigation'], setCountdown: React.Dispatch<React.SetStateAction<number>>, setGame: React.Dispatch<React.SetStateAction<Game>>) {
-  io.on(ServerEvent.GAME_START_BROADCAST, (message: GameStartBroadcast) => {
+export function createGameStartListener(navigation: waitingQueueProps['navigation'], setCountdown: React.Dispatch<React.SetStateAction<number>>, setGame: React.Dispatch<React.SetStateAction<Game>>) {
+  socket.on(ServerEvent.GAME_START_BROADCAST, (message: GameStartBroadcast) => {
     console.log('game start broadcast received');
     setGame((game) => {
       return {
@@ -34,7 +44,7 @@ export function createGameStartListener(io: SOCKET, navigation: waitingQueueProp
         status: GameStatus.GRACE
       }
     });
-    setCountdown(5);
+    setCountdown(3);
     const interval = setInterval(() => {
       setCountdown((countdown) => {
         if (countdown > 1) {
@@ -48,25 +58,20 @@ export function createGameStartListener(io: SOCKET, navigation: waitingQueueProp
       });
     }, 1000);
   })
+  return () => {
+    socket.off(ServerEvent.GAME_START_BROADCAST);
+  }
 }
 
-export function createGameEndListener(socket: SOCKET, navigation: waitingQueueProps['navigation']) {
-  socket.on(ServerEvent.GAME_END_BROADCAST, () => {
-    console.log('game end broadcast received');
-    navigation.popToTop();
-    navigation.navigate('Home');
-  })
-}
-
-export function startGame(socket: SOCKET) {
+export function startGame() {
   socket.emit(ClientEvent.START_GAME_REQUEST);
 }
 
-export function endGame(socket: SOCKET) {
+export function endGame() {
   socket.emit(ClientEvent.END_GAME_MESSAGE);
 }
 
-export function leaveGame(navigation: waitingQueueProps['navigation'], socket: SOCKET) {
+export function leaveGame(navigation: waitingQueueProps['navigation']) {
   socket.emit(ClientEvent.LEAVE_GAME_MESSAGE);
   navigation.popToTop();
   navigation.navigate('Home');

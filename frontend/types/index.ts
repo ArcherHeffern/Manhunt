@@ -16,6 +16,7 @@ export type reactStackParamList = {
   WaitingQueue: undefined;
 }
 
+export type navProps = NativeStackScreenProps<reactStackParamList>;
 export type homeProps = NativeStackScreenProps<reactStackParamList, 'Home'>;
 export type gameProps = NativeStackScreenProps<reactStackParamList, 'Game'>;
 export type createGameProps = NativeStackScreenProps<reactStackParamList, 'CreateGame'>;
