@@ -24,7 +24,7 @@ of a Runner to get them "out", and all Runners must be photographed before the t
 ## Stack
 
 Backend: 
-node/express (server), Socket.io (bidirectional communication), mongoDB (saving games and user data)
+node/express (server), Socket.io (full duplex communication), mongoDB (saving games and user data)
 
 Frontend:
 expo/react native
