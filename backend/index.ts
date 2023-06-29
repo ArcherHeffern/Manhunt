@@ -29,7 +29,7 @@ io.on('connection', (socket: SOCKET) => {
   socket.on(ClientEvent.END_GAME_MESSAGE, () => endGame(io, socket));
   socket.on(ClientEvent.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
   socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(socket));
-  socket.on(ClientEvent.START_GAME_MESSAGE, (message: object) => startGame(socket, message));
+  socket.on(ClientEvent.START_GAME_REQUEST, () => startGame(io, socket));
 
   socket.on(DebugEvent.GET_GAMES, () => getGames(socket));
 

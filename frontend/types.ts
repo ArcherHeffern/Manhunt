@@ -2,7 +2,7 @@ export enum ClientEvent {
   CREATE_GAME_REQUEST = 'createGameRequest',
   JOIN_GAME_REQUEST = 'joinGameRequest',
   LEAVE_GAME_MESSAGE = 'leaveGameMessage',
-  START_GAME_MESSAGE = 'startGameMessage',
+  START_GAME_REQUEST = 'startGameMessage',
   PLAYER_LOCATION_MESSAGE = 'playerLocationMessage',
   PLAYER_FOUND_MESSAGE = 'playerFoundMessage',
   END_GAME_MESSAGE = 'endGameMessage',
@@ -14,6 +14,7 @@ export enum ServerEvent {
   JOIN_GAME_RESPONSE = 'joinGameResponse',
   GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
   GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
+  START_GAME_RESPONSE = 'startGameResponse',
   GAME_START_BROADCAST = 'gameStartBroadcast',
   PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
   PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
@@ -63,14 +64,19 @@ export type Game = {
   id: string;
   players: Player[];
   hunters: Player[];
+  runners: Player[];
   found: Player[];
   time: number; // seconds
   started: boolean;
   finished: boolean;
   winner: string|null;
-  creator: string;
   created: Date;
   settings: GameSettings;
+}
+
+export enum Role {
+  HUNTER = 'hunter',
+  RUNNER = 'runner',
 }
 
 export function isGame(game: object): game is Game {
@@ -84,7 +90,6 @@ export function isGame(game: object): game is Game {
     typeof (game as Game).started === 'boolean' &&
     typeof (game as Game).finished === 'boolean' &&
     (typeof (game as Game).winner === 'string' || (game as Game).winner === null) &&
-    typeof (game as Game).creator === 'string' &&
     typeof (game as Game).created === 'object' &&
     isGameSettings((game as Game).settings)
   );
@@ -150,8 +155,11 @@ export interface GameQueueBroadcast extends Broadcast {
 
 // Start Game
 
-export interface StartGameMessage extends Message {}
-export interface StartingGameBroadcast extends Broadcast {}
+export interface StartGameRequest extends Request {}
+export interface StartGameResponse extends Response {}
+export interface GameStartBroadcast extends Broadcast {
+  role?: Role;
+}
 
 // Game Running 
 // Grace

@@ -21,16 +21,41 @@ export default function createGame(socket: SOCKET, message: object) {
     };
 
     const gameSettings = message.gameSettings;
+    // Sanity checks
+    let errorMessage = null;
+    if (gameSettings.maxPlayers < 2) {
+      errorMessage = 'Not enough players';
+    } else if (gameSettings.numHunters < 1) {
+      errorMessage = 'Not enough hunters';
+    } else if (gameSettings.numHunters >= gameSettings.maxPlayers) {
+      errorMessage = 'Too many hunters';
+    } else if (gameSettings.maxRounds < 1) {
+      errorMessage = 'Not enough rounds';
+    } else if (gameSettings.maxTime < 1) {
+      errorMessage = 'Not enough time';
+    } else if (gameSettings.gracePeriod < 1) {
+      errorMessage = 'Not enough grace period';
+    }
+    if (errorMessage) {
+      const response: CreateGameResponse = {
+        status: StatusCode.BAD_REQUEST,
+        message: errorMessage,
+      };
+      console.log('error creating game' + response.message);
+      socket.emit(ServerEvent.CREATE_GAME_RESPONSE, JSON.stringify(response));
+      return;
+    }
+
     const game: Game = {
       id: socket.id,
       players: [player],
       hunters: [],
+      runners: [],
       found: [],
       time: 0,
       started: false,
       finished: false,
       winner: null,
-      creator: player.name,
       created: new Date(),
       settings: {
         maxPlayers: gameSettings.maxPlayers,

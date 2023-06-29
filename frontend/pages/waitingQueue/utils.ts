@@ -1,5 +1,5 @@
 import { SOCKET, waitingQueueProps } from '../../types/';
-import { Game, ServerEvent, ClientEvent, GameQueueBroadcast } from '../../types';
+import { Game, ServerEvent, ClientEvent, GameQueueBroadcast, Role, GameStartBroadcast, StartGameResponse, StatusCode } from '../../types';
 
 export function gameQueueBroadcastListener(io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>) {
   io.on(ServerEvent.GAME_QUEUE_BROADCAST, (data: GameQueueBroadcast) => {
@@ -14,17 +14,27 @@ export function gameQueueBroadcastListener(io: SOCKET, setGame: React.Dispatch<R
   })
 }
 
+export function createStartGameListener(socket: SOCKET, setErrormessage: React.Dispatch<React.SetStateAction<string>>) {
+  socket.on(ServerEvent.START_GAME_RESPONSE, (message: StartGameResponse) => {
+    console.log('start game response received');
+    if (message.status === StatusCode.OK) {
+      console.log('game started');
+    } else {
+      setErrormessage(message.message);
+    }
+  })
+}
+
 export function createGameStartListener(io: SOCKET, navigation: waitingQueueProps['navigation']) {
-  io.on(ServerEvent.GAME_START_BROADCAST, () => {
-    // TODO: Create a countdown timer before starting
+  io.on(ServerEvent.GAME_START_BROADCAST, (message: GameStartBroadcast) => {
     console.log('game start broadcast received');
+    // TODO: Create a countdown timer before starting
     navigation.popToTop();
-    navigation.navigate('Game');
+    navigation.navigate('Game', {role: message.role});
   })
 }
 
 export function createGameEndListener(socket: SOCKET, navigation: waitingQueueProps['navigation']) {
-  console.log('createGameEndListener')
   socket.on(ServerEvent.GAME_END_BROADCAST, () => {
     console.log('game end broadcast received');
     navigation.popToTop();
@@ -32,16 +42,12 @@ export function createGameEndListener(socket: SOCKET, navigation: waitingQueuePr
   })
 }
 
-export function startGame(navigation: waitingQueueProps['navigation'], socket: SOCKET) {
-  socket.emit(ClientEvent.START_GAME_MESSAGE);
-  navigation.popToTop();
-  navigation.navigate('Game');
+export function startGame(socket: SOCKET) {
+  socket.emit(ClientEvent.START_GAME_REQUEST);
 }
 
-export function endGame(navigation: waitingQueueProps['navigation'], socket: SOCKET) {
+export function endGame(socket: SOCKET) {
   socket.emit(ClientEvent.END_GAME_MESSAGE);
-  navigation.popToTop();
-  navigation.navigate('Home');
 }
 
 export function leaveGame(navigation: waitingQueueProps['navigation'], socket: SOCKET) {

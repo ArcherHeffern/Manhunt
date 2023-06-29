@@ -3,17 +3,18 @@ import { ServerEvent } from '../../frontend/types';
 import games from '../games';
 
 export default function endGame(io: IO, socket: SOCKET) {
-  if (!games[socket.id]) {
+  const gameId = socket.id;
+  const game = games[gameId];
+  if (!game) {
+    console.log('game not found');
     return;
   }
-  const gameId = socket.id;
-  delete games[gameId];
   io.to(gameId).emit(ServerEvent.GAME_END_BROADCAST);
-  const clients = io.sockets.adapter.rooms.get(gameId) || new Set();
-  for (const clientId of clients) {
-    const clientSocket = io.sockets.sockets.get(clientId);
-    clientSocket?.leave('Other Room');
+  for (const player of game.players) {
+    const clientSocket = io.sockets.sockets.get(player.id);
+    clientSocket?.leave(gameId);
   }
+  delete games[gameId];
   console.log('game ended');
   return;
 

@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Game } from '../types';
+import { Game, Role } from '../types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/cjs';
 import { GameSettings } from '../types';
@@ -10,7 +10,7 @@ export type SOCKET = Socket<DefaultEventsMap, DefaultEventsMap>
 
 export type reactStackParamList = {
   Home: undefined;
-  Game: undefined;
+  Game: {role: Role };
   CreateGame: undefined;
   HowToPlay: undefined;
   WaitingQueue: undefined;

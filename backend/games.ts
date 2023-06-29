@@ -1,3 +1,5 @@
 import { Games } from '../frontend/types';
 
-export default {} as Games;
+const games = {} as Games;
+
+export default games;
