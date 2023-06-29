@@ -60,6 +60,13 @@ export function isPlayer(player: object): player is Player {
   );
 }
 
+export enum GameStatus {
+  WAITING = 'waiting',
+  GRACE = 'grace',
+  RUNNING = 'running',
+  OVER = 'over',
+}
+
 export type Game = {
   id: string;
   players: Player[];
@@ -67,8 +74,7 @@ export type Game = {
   runners: Player[];
   found: Player[];
   time: number; // seconds
-  started: boolean;
-  finished: boolean;
+  status: GameStatus
   winner: string|null;
   created: Date;
   settings: GameSettings;
@@ -85,10 +91,10 @@ export function isGame(game: object): game is Game {
     typeof (game as Game).id === 'string' &&
     typeof (game as Game).players === 'object' &&
     typeof (game as Game).hunters === 'object' &&
+    typeof (game as Game).runners === 'object' &&
     typeof (game as Game).found === 'object' &&
     typeof (game as Game).time === 'number' &&
-    typeof (game as Game).started === 'boolean' &&
-    typeof (game as Game).finished === 'boolean' &&
+    typeof (game as Game).status === 'string' &&
     (typeof (game as Game).winner === 'string' || (game as Game).winner === null) &&
     typeof (game as Game).created === 'object' &&
     isGameSettings((game as Game).settings)

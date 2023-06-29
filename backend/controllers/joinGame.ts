@@ -1,4 +1,4 @@
-import { Game, Player, isJoinGameRequest, JoinGameResponse, StatusCode, GameQueueBroadcast, ServerEvent } from '../../frontend/types';
+import { Game, Player, isJoinGameRequest, JoinGameResponse, StatusCode, GameQueueBroadcast, ServerEvent, GameStatus } from '../../frontend/types';
 import { SOCKET } from '../types';
 import games from '../games';
 
@@ -11,9 +11,9 @@ export default function joinGame(socket: SOCKET, message: object) {
       resMessage = 'Game does not exist';
     } else if (socket.rooms.size > 1) {
       resMessage = 'Already in a game';
-    } else if (game.finished) {
+    } else if (game.status === GameStatus.OVER) {
       resMessage = 'Game has already finished';
-    } else if (game.started) {
+    } else if (game.status === GameStatus.RUNNING || game.status === GameStatus.GRACE) {
       resMessage = 'Game has already started';
     } else if (game.players.find(player => player.id === socket.id)) {
       // TODO: Could perhaps later just switch them instead of denying

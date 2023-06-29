@@ -1,4 +1,4 @@
-import { ServerEvent, StartGameResponse, StatusCode, Game } from '../../frontend/types';
+import { ServerEvent, StartGameResponse, StatusCode, Game, GameStatus } from '../../frontend/types';
 import { SOCKET, IO } from '../types';
 import games from '../games';
 import runGame from '../services/runGame';
@@ -11,8 +11,10 @@ export default function startGame(io: IO, socket: SOCKET) {
   let errorMessage = null;
   if (!game) {
     errorMessage = 'Game does not exist';
-  } else if (game.started) {
+  } else if (game.status === GameStatus.RUNNING || game.status === GameStatus.GRACE) {
     errorMessage = 'Game already started';
+  } else if (game.status === GameStatus.OVER) {
+    errorMessage = 'Game already finished';
   } else if (game.players.length < 2) {
     errorMessage = 'Not enough players';
   } else if (game.id !== socket.id) {

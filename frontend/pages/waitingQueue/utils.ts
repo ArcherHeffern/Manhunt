@@ -1,5 +1,5 @@
 import { SOCKET, waitingQueueProps } from '../../types/';
-import { Game, ServerEvent, ClientEvent, GameQueueBroadcast, Role, GameStartBroadcast, StartGameResponse, StatusCode } from '../../types';
+import { Game, ServerEvent, ClientEvent, GameQueueBroadcast, Role, GameStartBroadcast, StartGameResponse, StatusCode, GameStatus } from '../../types';
 
 export function gameQueueBroadcastListener(io: SOCKET, setGame: React.Dispatch<React.SetStateAction<Game>>) {
   io.on(ServerEvent.GAME_QUEUE_BROADCAST, (data: GameQueueBroadcast) => {
@@ -25,12 +25,28 @@ export function createStartGameListener(socket: SOCKET, setErrormessage: React.D
   })
 }
 
-export function createGameStartListener(io: SOCKET, navigation: waitingQueueProps['navigation']) {
+export function createGameStartListener(io: SOCKET, navigation: waitingQueueProps['navigation'], setCountdown: React.Dispatch<React.SetStateAction<number>>, setGame: React.Dispatch<React.SetStateAction<Game>>) {
   io.on(ServerEvent.GAME_START_BROADCAST, (message: GameStartBroadcast) => {
     console.log('game start broadcast received');
-    // TODO: Create a countdown timer before starting
-    navigation.popToTop();
-    navigation.navigate('Game', {role: message.role});
+    setGame((game) => {
+      return {
+        ...game,
+        status: GameStatus.GRACE
+      }
+    });
+    setCountdown(5);
+    const interval = setInterval(() => {
+      setCountdown((countdown) => {
+        if (countdown > 1) {
+          return countdown - 1;
+        } else {
+          clearInterval(interval);
+          navigation.popToTop();
+          navigation.navigate('Game', {role: message.role});
+          return countdown;
+        }
+      });
+    }, 1000);
   })
 }
 

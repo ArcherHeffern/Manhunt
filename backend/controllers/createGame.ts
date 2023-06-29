@@ -1,4 +1,4 @@
-import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, ServerEvent, Player } from '../../frontend/types';
+import { Game, CreateGameResponse, StatusCode, isCreateGameRequest, ServerEvent, Player, GameStatus } from '../../frontend/types';
 import { SOCKET } from '../types';
 import games from '../games';
 
@@ -53,8 +53,7 @@ export default function createGame(socket: SOCKET, message: object) {
       runners: [],
       found: [],
       time: 0,
-      started: false,
-      finished: false,
+      status: GameStatus.WAITING,
       winner: null,
       created: new Date(),
       settings: {

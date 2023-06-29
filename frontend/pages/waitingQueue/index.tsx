@@ -11,11 +11,12 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
 
   const { game, setGame } = useContext(GameContext);
   const [errormessage, setErrorMessage] = React.useState('');
+  const [countdown, setCountdown] = React.useState(0);
   const owner = game.id === socket.id;
 
   useEffect(() => {
     gameQueueBroadcastListener(socket, setGame);
-    createGameStartListener(socket, navigation);
+    createGameStartListener(socket, navigation, setCountdown, setGame);
     createStartGameListener(socket, setErrorMessage);
     createGameEndListener(socket, navigation);
     return () => {
@@ -36,6 +37,7 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
         keyExtractor={item => item.id}
       />
       <View>
+        <Text>{countdown?`Starting in ${countdown}`:''}</Text>
         <Text>{errormessage}</Text>
         {owner && <Button title='Start Game' onPress={() => startGame(socket)} />}
         {owner?
