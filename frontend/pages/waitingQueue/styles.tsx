@@ -6,5 +6,10 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  }, 
+  countdown: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
   }
 });

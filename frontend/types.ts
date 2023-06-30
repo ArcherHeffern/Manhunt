@@ -13,9 +13,9 @@ export enum ServerEvent {
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_RESPONSE = 'joinGameResponse',
   GAME_QUEUE_BROADCAST = 'gameQueueBroadcast',
-  GRACE_PERIOD_BROADCAST = 'gracePeriodBroadcast',
   START_GAME_RESPONSE = 'startGameResponse',
   GAME_START_BROADCAST = 'gameStartBroadcast',
+  GRACE_OVER_BROADCAST = 'graceOverBroadcast',
   PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
   PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
   GAME_END_BROADCAST = 'gameEndBroadcast', // for when the game ends prematurely - either in queue or in game
@@ -75,7 +75,7 @@ export type Game = {
   found: Player[];
   time: number; // seconds
   status: GameStatus
-  winner: string|null;
+  winner: Role;
   created: Date;
   settings: GameSettings;
 }

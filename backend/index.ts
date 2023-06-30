@@ -34,6 +34,7 @@ io.on('connection', (socket: SOCKET) => {
   socket.on(DebugEvent.GET_GAMES, () => getGames(socket));
 
   socket.on('disconnecting', () => {
+    console.log('user disconnected');
     leaveGame(socket);
     endGame(io, socket);
   });

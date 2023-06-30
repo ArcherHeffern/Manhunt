@@ -56,6 +56,7 @@ export function createGameStartListener(navigation: waitingQueueProps['navigatio
           return countdown;
         }
       });
+      // TODO: Update Runners and Hunters
     }, 1000);
   })
   return () => {
