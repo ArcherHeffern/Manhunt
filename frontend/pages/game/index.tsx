@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { SafeAreaView, Button, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text } from 'react-native';
 import { gameProps, navProps } from '../../types/';
 import styles from './styles';
 import { GameContext } from '../../GameProvider';
@@ -7,20 +7,16 @@ import { createGameEndListener, createGameOverListener, createGraceOverListener,
 import FadeInView from './fadeIn';
 import { Role } from '../../types';
 import GameWinScreen from './GameWinScreen';
-import { Gyroscope } from 'expo-sensors';
+import useSensors from './sensorsHook';
 
 const duration = 3000;
 
 export default function Game({ route, navigation }: gameProps) {
-  const [{ x, y, z }, setData] = useState({
-      x: 0,
-      y: 0,
-      z: 0,
-    });
   const [showContent, setShowContent] = useState(false);
   const { game, setGame } = useContext(GameContext);
-  const role = route.params.role;
-  const oppositeRole = role === Role.HUNTER ? Role.RUNNER : Role.HUNTER;
+  const role = route.params.role
+  const { errorMsg, location, magnetometerData } = useSensors();
+  const { x, y, z } = magnetometerData;
 
   useEffect(() => {
     const unsubscribe1 = createGameEndListener(navigation);
@@ -36,29 +32,6 @@ export default function Game({ route, navigation }: gameProps) {
     }
   }, [])
 
-  const [subscription, setSubscription] = useState(null);
-
-  const _slow = () => Gyroscope.setUpdateInterval(1000);
-  const _fast = () => Gyroscope.setUpdateInterval(16);
-
-  const _subscribe = () => {
-    setSubscription(
-      Gyroscope.addListener(gyroscopeData => {
-        setData(gyroscopeData);
-      })
-    );
-  };
-
-  const _unsubscribe = () => {
-    subscription && subscription.remove();
-    setSubscription(null);
-  };
-
-  useEffect(() => {
-    _subscribe();
-    return () => _unsubscribe();
-  }, []);
-
   if (!showContent) {
     return (
       <FadeInView role={role} duration={duration} game={game}/>
@@ -72,20 +45,14 @@ export default function Game({ route, navigation }: gameProps) {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>You are {role}</Text>
       <View>
-        <Text>Gyroscope:</Text>
+        <Text>Magnetometer:</Text>
       <Text>x: {x}</Text>
       <Text>y: {y}</Text>
       <Text>z: {z}</Text>
       <View>
-        <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe}>
-          <Text>{subscription ? 'On' : 'Off'}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={_slow}>
-          <Text>Slow</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={_fast}>
-          <Text>Fast</Text>
-        </TouchableOpacity>
+        <Text>Location:</Text>
+        <Text>Latitude: {location?.coords?.latitude || 0}</Text>   
+        <Text>Longitude: {location?.coords?.longitude || 0}</Text>
       </View>
         {/* This is for the compass to the nearest player */}
       </View>
@@ -93,6 +60,7 @@ export default function Game({ route, navigation }: gameProps) {
       {game.found.length !== 0 && (<Text>{game.found[game.found.length - 1].name} was last found</Text>)}
       <Text>Objective: {role === Role.HUNTER? 'Run from the Hunters': 'Find the Runners'}</Text>
       <Text>{game.runners.length - game.found.length}/{game.runners.length} Runners remaining</Text>
+      {errorMsg && <Text>Error: {errorMsg}</Text>}
     </SafeAreaView>
   );
   }

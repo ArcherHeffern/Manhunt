@@ -3,14 +3,10 @@ import { SafeAreaView, Button, View, Text } from 'react-native';
 import { homeProps } from '../../types/';
 import JoinGameModal from './joinGameModal';
 import styles from './styles';
-import socket from '../../socket';
-import { ClientEvent } from '../../types';
-import { GameContext } from '../../GameProvider';
 
 export default function Home({ route, navigation }: homeProps) {
 
   const [showModal, setShowModal] = useState(false);
-  const {game, setGame} = useContext(GameContext);
 
   function openModal() {
     setShowModal(true);
@@ -22,7 +18,7 @@ export default function Home({ route, navigation }: homeProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <JoinGameModal {...{showModal, closeModal, navigation}} />
+      <JoinGameModal {...{ showModal, closeModal, navigation }} />
       <Text style={styles.header}> ManHunt </Text>
       <View style={styles.mainPageButtonContainer} >
         <Button title='Join Game' onPress={() => openModal()} />
