@@ -36,8 +36,8 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
         keyExtractor={item => item.id}
       />
       <View>
-        <Text style={styles.countdown}>{countdown?`Starting in ${countdown}`:''}</Text>
         <Text>{errormessage}</Text>
+        <Text style={styles.countdown}>{countdown?`Starting in ${countdown}`:''}</Text>
         {owner && <Button title='Start Game' onPress={() => startGame()} />}
         {owner?
           <Button title='End Game' onPress={() => endGame()} />

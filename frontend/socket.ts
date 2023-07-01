@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL = 'http://localhost:8000';
+const URL = 'ws://localhost:8000';
+const URL2 = 'ws://172.20.174.43:8000';
 
-export default io(URL);
+export default io(URL2);
