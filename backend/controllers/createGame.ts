@@ -4,16 +4,21 @@ import games from '../games';
 
 export default function createGame(socket: SOCKET, message: object) {
   if (isCreateGameRequest(message)) {
+    let errorMessage = null;
+    console.log('create new game request received');
     if (games[socket.id]) {
+      errorMessage = 'User already has a game, and thus cannot create a new one';
+    } else if (socket.rooms.size > 1) {
+      errorMessage = 'User is already in a game, and thus cannot create a new one';
+    }
+    if (errorMessage) {
       const response: CreateGameResponse = {
         status: StatusCode.BAD_REQUEST,
-        message: 'User already has a game, and thus cannot create a new one',
+        message: errorMessage,
       };
-      // TODO: Check if user is already in room or already has a game and send error 
       socket.emit(ServerEvent.CREATE_GAME_RESPONSE, JSON.stringify(response));
       return;
     }
-    console.log('create new game');
     const player: Player = {
       id: socket.id,
       name: message.username || 'Player ' + socket.id,
@@ -22,7 +27,7 @@ export default function createGame(socket: SOCKET, message: object) {
 
     const gameSettings = message.gameSettings;
     // Sanity checks
-    let errorMessage = null;
+    errorMessage = null;
     if (gameSettings.maxPlayers < 2) {
       errorMessage = 'Not enough players';
     } else if (gameSettings.numHunters < 1) {
@@ -54,7 +59,7 @@ export default function createGame(socket: SOCKET, message: object) {
       found: [],
       time: 0,
       status: GameStatus.WAITING,
-      winner: null,
+      winner: undefined,
       created: new Date(),
       settings: {
         maxPlayers: gameSettings.maxPlayers,

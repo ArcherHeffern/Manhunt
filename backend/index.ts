@@ -41,8 +41,6 @@ io.on('connection', (socket: SOCKET) => {
 
 });
 
-// TODO: Set random person to owner
-
 app.use(cors());
 app.use(routes);
 

@@ -22,19 +22,25 @@ export default function runGame(io: IO, gameId: string) {
   for (const player of players) {
     if (hunters.every(hunter => hunter.id !== player.id)) {
       runners.push(player);
-      const broadcast: GameStartBroadcast = {
-        role: Role.RUNNER,
-      };
-      io.sockets.sockets.get(player.id)?.emit(ServerEvent.GAME_START_BROADCAST, broadcast);
     }
   }
   for (const hunter of hunters) {
     const broadcast: GameStartBroadcast = {
       role: Role.HUNTER,
+      runners,
+      hunters,
     };
     io.sockets.sockets.get(hunter.id)?.emit(ServerEvent.GAME_START_BROADCAST, broadcast);
   }
-  
+  for (const runner of runners) {
+    const broadcast: GameStartBroadcast = {
+      role: Role.RUNNER,
+      runners,
+      hunters,
+    };
+    io.sockets.sockets.get(runner.id)?.emit(ServerEvent.GAME_START_BROADCAST, broadcast);
+  }
+
   // grace period
 
   // run game

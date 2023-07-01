@@ -75,7 +75,7 @@ export type Game = {
   found: Player[];
   time: number; // seconds
   status: GameStatus
-  winner: Role;
+  winner?: Role;
   created: Date;
   settings: GameSettings;
 }
@@ -165,6 +165,8 @@ export interface StartGameRequest extends Request {}
 export interface StartGameResponse extends Response {}
 export interface GameStartBroadcast extends Broadcast {
   role?: Role;
+  runners: Player[];
+  hunters: Player[];
 }
 
 // Game Running 

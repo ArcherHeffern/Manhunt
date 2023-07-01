@@ -41,7 +41,9 @@ export function createGameStartListener(navigation: waitingQueueProps['navigatio
     setGame((game) => {
       return {
         ...game,
-        status: GameStatus.GRACE
+        status: GameStatus.GRACE,
+        runners: message.runners,
+        hunters: message.hunters
       }
     });
     setCountdown(3);
@@ -56,7 +58,6 @@ export function createGameStartListener(navigation: waitingQueueProps['navigatio
           return countdown;
         }
       });
-      // TODO: Update Runners and Hunters
     }, 1000);
   })
   return () => {

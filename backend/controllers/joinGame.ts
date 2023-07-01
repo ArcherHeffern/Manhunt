@@ -16,7 +16,6 @@ export default function joinGame(socket: SOCKET, message: object) {
     } else if (game.status === GameStatus.RUNNING || game.status === GameStatus.GRACE) {
       resMessage = 'Game has already started';
     } else if (game.players.find(player => player.id === socket.id)) {
-      // TODO: Could perhaps later just switch them instead of denying
       resMessage = 'Already in this game';
     } else if (game.players.length >= game.settings.maxPlayers) {
       resMessage = 'Game is full';
