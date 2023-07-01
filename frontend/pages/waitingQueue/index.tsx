@@ -5,6 +5,7 @@ import { GameContext } from '../../GameProvider';
 import styles from './styles';
 import { gameQueueBroadcastListener, createGameStartListener, createStartGameListener, startGame, leaveGame, endGame, createGameEndListener } from './utils';
 import socket from '../../socket';
+import { setStringAsync } from 'expo-clipboard';
 
 export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
 
@@ -28,7 +29,20 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View>
       <Text>Game ID: {game.id}</Text>
+      <Button
+        title="Copy Game ID"
+        onPress={async () => {
+          try {
+          await setStringAsync(game.id)
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+      />
+      </View>
       <Text>Players</Text>
       <FlatList
         data={game.players}
