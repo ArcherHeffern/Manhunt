@@ -29,9 +29,10 @@ export default function CreateGame({ route, navigation }: createGameProps) {
   const [formData, formDispatch] = useReducer(formReducer, initialFormData);
   const [username, setUsername] = useState('');
   const {game, setGame} = useContext(GameContext);
+  const [errormessage, setErrormessage] = useState('');
 
   useEffect(() => {
-    const unsubscribe = addCreateGameListener(setGame, navigation);
+    const unsubscribe = addCreateGameListener(setGame, navigation, setErrormessage);
     getUsernameFromStorage(setUsername);
 
     return () => {
@@ -51,6 +52,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               setUsername(val);
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -61,6 +63,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               formDispatch({ name: 'maxPlayers', value: parseInt(val) });
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -71,6 +74,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               formDispatch({ name: 'numHunters', value: parseInt(val) });
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -81,6 +85,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               formDispatch({ name: 'maxRounds', value: parseInt(val) });
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -91,6 +96,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               formDispatch({ name: 'maxTime', value: parseInt(val) });
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -101,6 +107,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             onChangeText={(val) => {
               formDispatch({ name: 'gracePeriod', value: parseInt(val) });
             }}
+            style={styles.field}
           />
         </View>
         <View style={styles.fieldContainer}>
@@ -122,9 +129,9 @@ export default function CreateGame({ route, navigation }: createGameProps) {
           />
         </View>
       </View>
-      <Text>FormData: {JSON.stringify(formData)}</Text>
+      {errormessage && <Text>Error: {errormessage}</Text> } 
       <Button title='Create Game' onPress={() => {
-        createGameEmitter(formData, username)
+        createGameEmitter(formData, username, setErrormessage);
         setUsernameInStorage(username);
       }
       } />

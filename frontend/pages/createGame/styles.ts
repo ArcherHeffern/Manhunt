@@ -14,16 +14,24 @@ export default StyleSheet.create({
   },
   formContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     borderColor: '#000',
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
+    width: '100%'
   }, 
   fieldContainer: {
-    flexDirection: 'row',
+    paddingVertical: 5,
     width: '100%',
-    justifyContent: 'space-between',
+    flexDirection: 'row',
+  }, 
+  field: {
+    borderColor: '#000',
+    marginLeft: 10,
+    borderBottomWidth: 1,
+    flexGrow: 1,
+    paddingHorizontal: 10,
   }
 });

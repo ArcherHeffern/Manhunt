@@ -3,7 +3,11 @@ import { createGameProps, SOCKET } from '../../types/';
 import { GameSettings, CreateGameRequest } from '../../types';
 import socket from '../../socket';
 
-export function createGameEmitter(gameSettings: GameSettings, username: string|null = null) {
+export function createGameEmitter(gameSettings: GameSettings, username: string|null = null, setErrormessage: React.Dispatch<React.SetStateAction<string|null>>) {
+  if (!socket.connected) {
+    setErrormessage('Not connected to server');
+    return;
+  }
   const gameRequest: CreateGameRequest = {
     gameSettings
   }
@@ -14,7 +18,7 @@ export function createGameEmitter(gameSettings: GameSettings, username: string|n
   console.log('emitted create game request');
 }
 
-export function addCreateGameListener(setGame: React.Dispatch<React.SetStateAction<Game>>, navigation: createGameProps['navigation']) {
+export function addCreateGameListener(setGame: React.Dispatch<React.SetStateAction<Game>>, navigation: createGameProps['navigation'], setErrormessage: React.Dispatch<React.SetStateAction<string|null>>) {
   socket.on(ServerEvent.CREATE_GAME_RESPONSE, (data: CreateGameResponse) => {
     data = JSON.parse(data as unknown as string);
   if (data.status === StatusCode.OK) {
@@ -23,7 +27,7 @@ export function addCreateGameListener(setGame: React.Dispatch<React.SetStateActi
     navigation.popToTop();
     navigation.navigate('WaitingQueue');
   } else {
-    console.log('error creating game: ', data.message);
+    setErrormessage(data.message);
   }
   })
   return () => {
