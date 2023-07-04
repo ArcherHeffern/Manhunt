@@ -10,7 +10,6 @@ export default StyleSheet.create({
   title: {
       fontSize: 30,
       fontWeight: 'bold',
-      fontFamily: 'arial',
       marginTop: 20,
       marginBottom: 20,
   },
@@ -23,7 +22,6 @@ export default StyleSheet.create({
   fadeInText: {
     fontSize: 30,
     fontWeight: 'bold',
-    fontFamily: 'arial',
   },
   playerListContainer: {
     flex: 1,
@@ -35,7 +33,6 @@ export default StyleSheet.create({
   playerListContainerTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'arial',
     marginTop: 10,
     marginBottom: 10,
     borderBottomColor: '#000',
@@ -44,7 +41,6 @@ export default StyleSheet.create({
   },
   playerListContainerItem: {
     fontSize: 12,
-    fontFamily: 'arial',
     textAlign: 'center',
   }
 });

@@ -11,6 +11,7 @@ import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
 import { getGames } from './controllers/dev';
 import { ClientEvent, DebugEvent} from '../frontend/types';
+import playerFound from './controllers/playerFound';
 
 const PORT = 8000;
 
@@ -30,6 +31,7 @@ io.on('connection', (socket: SOCKET) => {
   socket.on(ClientEvent.JOIN_GAME_REQUEST, (message: object) => joinGame(socket, message));
   socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(socket));
   socket.on(ClientEvent.START_GAME_REQUEST, () => startGame(io, socket));
+  socket.on(ClientEvent.PLAYER_FOUND_MESSAGE, () => playerFound(socket));
 
   socket.on(DebugEvent.GET_GAMES, () => getGames(socket));
 

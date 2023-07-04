@@ -18,7 +18,7 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
     const unsubscribe1 = gameQueueBroadcastListener(setGame);
     const unsubscribe2 = createGameStartListener(navigation, setCountdown, setGame);
     const unsubscribe3 = createStartGameListener(setErrorMessage);
-    const unsubscribe4 = createGameEndListener(navigation);
+    const unsubscribe4 = createGameEndListener(navigation, setGame);
     return () => {
       unsubscribe1();
       unsubscribe2();

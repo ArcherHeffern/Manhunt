@@ -9,6 +9,7 @@ export enum ClientEvent {
 }
 
 export enum ServerEvent {
+  GAME_TIME_BROADCAST = 'gameTimeBroadcast',
   CONNECT_RESPONSE = 'connectResponse',
   CREATE_GAME_RESPONSE = 'createGameResponse',
   JOIN_GAME_RESPONSE = 'joinGameResponse',
@@ -45,10 +46,15 @@ export enum StatusCode {
   INTERNAL_SERVER_ERROR = 500,
 }
 
+export type Location = {
+  lat: number;
+  lng: number;
+}
+
 export type Player = {
   id: string;
   name: string;
-  location?: string;
+  location?: Location;
 }
 
 export function isPlayer(player: object): player is Player {
@@ -60,11 +66,13 @@ export function isPlayer(player: object): player is Player {
   );
 }
 
+// What I would like: Enum of all possible game statuses, and the done status can be one of multiple types of endings, think of it as a nested enum
 export enum GameStatus {
   WAITING = 'waiting',
   GRACE = 'grace',
   RUNNING = 'running',
-  OVER = 'over',
+  COMPLETED = 'completed',
+  ENDED = 'ended',
 }
 
 export type Game = {
@@ -73,6 +81,7 @@ export type Game = {
   hunters: Player[];
   runners: Player[];
   found: Player[];
+  grace: number; // seconds
   time: number; // seconds
   status: GameStatus
   winner?: Role;
@@ -106,6 +115,8 @@ export type Games = { [key: string]: Game|undefined };
 export type GameSettings = {
   maxPlayers: number;
   numHunters: number;
+  runnerInterval: number; // In seconds
+  hunterInterval: number; // In seconds
   maxRounds: number;
   maxTime: number;
   gracePeriod: number;
@@ -171,28 +182,25 @@ export interface GameStartBroadcast extends Broadcast {
 
 // Game Running 
 // Grace
-export interface GracePeriodBroadcast extends Broadcast {
+export interface GracePeriodEndBroadcast extends Broadcast {
   time: number; // seconds
 }
-export interface ClientSidePlayerLocationMessage extends Message {
-  location: string;
-}
-
-export function isClientSidePlayerLocationMessage(message: object): message is ClientSidePlayerLocationMessage {
-  return typeof (message as ClientSidePlayerLocationMessage).location === 'string';
-}
-export interface ServerSidePlayerLocationMessage extends Message {
-  distance?: number;
-  direction?: string; 
+export interface LocationMessage extends Message {
+  player: Player;
 }
 
 export interface PlayerFoundMessage extends Message {}
 export interface PlayerFoundBroadcast extends Broadcast {
-  playerName: string;
-  numRemaining: number;
+  player: Player;
 }
 
 // Game Over
 export interface GameOverBroadcast extends Broadcast {
-  winner: string;
+  winner: Role;
+  reason: string;
+}
+
+export interface GameTimeBroadcast extends Broadcast {
+  time: number; // seconds
+  type: GameStatus;
 }

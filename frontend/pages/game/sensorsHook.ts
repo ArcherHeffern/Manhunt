@@ -46,6 +46,7 @@ export default function useSensors() {
     return {
         location,
         magnetometerData,
-        errorMsg
+        errorMsg,
+        setErrorMsg
     };
 }

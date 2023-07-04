@@ -21,13 +21,13 @@ export function gameQueueBroadcastListener(setGame: React.Dispatch<React.SetStat
   }
 }
 
-export function createStartGameListener(setErrormessage: React.Dispatch<React.SetStateAction<string>>) {
+export function createStartGameListener(setErrorMessage: React.Dispatch<React.SetStateAction<string>>) {
   socket.on(ServerEvent.START_GAME_RESPONSE, (message: StartGameResponse) => {
     console.log('start game response received');
     if (message.status === StatusCode.OK) {
       console.log('game started');
     } else {
-      setErrormessage(message.message);
+      setErrorMessage(message.message);
     }
   })
   return () => {

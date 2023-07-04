@@ -13,7 +13,7 @@ export default function startGame(io: IO, socket: SOCKET) {
     errorMessage = 'Game does not exist';
   } else if (game.status === GameStatus.RUNNING || game.status === GameStatus.GRACE) {
     errorMessage = 'Game already started';
-  } else if (game.status === GameStatus.OVER) {
+  } else if (game.status === GameStatus.COMPLETED || game.status === GameStatus.ENDED) {
     errorMessage = 'Game already finished';
   } else if (game.players.length < 2) {
     errorMessage = 'Not enough players';
@@ -32,3 +32,7 @@ export default function startGame(io: IO, socket: SOCKET) {
     runGame(io, gameId);
   }
 }
+// TODO: 
+// graceOver
+// gameTime
+// playerLocation

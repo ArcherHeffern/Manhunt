@@ -11,7 +11,7 @@ export default function joinGame(socket: SOCKET, message: object) {
       resMessage = 'Game does not exist';
     } else if (socket.rooms.size > 1) {
       resMessage = 'Already in a game';
-    } else if (game.status === GameStatus.OVER) {
+    } else if (game.status === GameStatus.COMPLETED || game.status === GameStatus.ENDED) {
       resMessage = 'Game has already finished';
     } else if (game.status === GameStatus.RUNNING || game.status === GameStatus.GRACE) {
       resMessage = 'Game has already started';

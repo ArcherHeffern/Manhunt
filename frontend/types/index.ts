@@ -14,6 +14,7 @@ export type reactStackParamList = {
   CreateGame: undefined;
   HowToPlay: undefined;
   WaitingQueue: undefined;
+  GameDone: {reason: string};
 }
 
 export type navProps = NativeStackScreenProps<reactStackParamList>;
@@ -22,6 +23,7 @@ export type gameProps = NativeStackScreenProps<reactStackParamList, 'Game'>;
 export type createGameProps = NativeStackScreenProps<reactStackParamList, 'CreateGame'>;
 export type howToPlayProps = NativeStackScreenProps<reactStackParamList, 'HowToPlay'>;
 export type waitingQueueProps = NativeStackScreenProps<reactStackParamList, 'WaitingQueue'>;
+export type gameDoneProps = NativeStackScreenProps<reactStackParamList, 'GameDone'>;
 
 export type actionType = {
   name: keyof GameSettings;
