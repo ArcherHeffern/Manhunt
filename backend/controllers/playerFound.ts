@@ -1,16 +1,25 @@
 import games from '../games';
 import { SOCKET } from '../types';
-import { Game, ServerEvent, PlayerFoundBroadcast, Player } from '../../frontend/types';
+import { Game, ServerEvent, PlayerFoundBroadcast, Player, GameStatus } from '../../frontend/types';
 
 export default function playerFound(socket: SOCKET) {
-  const game = games[socket.id] as Game;
-  const player = Object.values(game.players).find((player) => {
-    player.id === socket.id;
+  console.log('player found message received');
+  const game = (Object.values(games).filter((game) => {
+    return game?.runners?.find((player) => {
+      return player.id === socket.id;
+    });
+  }) as Game[])[0];
+  if (!game || game.status !== GameStatus.RUNNING) {
+    console.log('Player not in a game or game is not running');
+    return;
+  }
+  const player = Object.values(game.runners).find((player) => {
+    return player.id === socket.id;
   }) as Player;
-  game.players.push(player);
+  game.found.push(player);
 
   const broadcast: PlayerFoundBroadcast = {
     player
   };
-  socket.broadcast.emit(ServerEvent.PLAYER_FOUND_BROADCAST, JSON.stringify(broadcast));
+  socket.to(game.id).emit(ServerEvent.PLAYER_FOUND_BROADCAST, JSON.stringify(broadcast));
 }

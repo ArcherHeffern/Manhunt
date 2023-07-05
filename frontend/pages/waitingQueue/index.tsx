@@ -54,7 +54,7 @@ export default function WaitingQueue({ route, navigation }: waitingQueueProps) {
         <Text style={styles.countdown}>{countdown?`Starting in ${countdown}`:''}</Text>
         {owner && <Button title='Start Game' onPress={() => startGame()} />}
         {owner?
-          <Button title='End Game' onPress={() => endGame()} />
+          <Button title='End Game' onPress={() => endGame(navigation)} />
           :
           <Button title='Leave Game' onPress={() => leaveGame(navigation)} />  
       }

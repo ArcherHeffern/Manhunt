@@ -23,13 +23,9 @@ export default StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
   },
-  playerListContainer: {
+  body: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 10,
-  }, 
+  },
   playerListContainerTitle: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -42,5 +38,24 @@ export default StyleSheet.create({
   playerListContainerItem: {
     fontSize: 12,
     textAlign: 'center',
+  }, 
+  modalContainer: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  modalInnerContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '80%',
+    height: '50%',
+    borderColor: '#000',
+    borderWidth: 5
   }
 });

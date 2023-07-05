@@ -1,16 +1,17 @@
-import { LocationObject } from "expo-location";
 import socket from '../../socket';
 import { navProps } from '../../types/'
-import { ServerEvent, ClientEvent, Game, GameStatus, Role, Player, LocationMessage, GameOverBroadcast, GameTimeBroadcast, PlayerFoundBroadcast } from "../../types";
-import { createGameEndListener } from "../../common";
+import { ServerEvent, ClientEvent, Game, GameStatus, Role, Player, ServerLocationMessage, GameOverBroadcast, GameTimeBroadcast, PlayerFoundBroadcast, timeUntilNextLocationBroadcast } from "../../types";
+import { createGameEndListener, leaveGame } from "../../common";
+import { useMemo } from "react";
 
-export { createGameEndListener };
+export { createGameEndListener, leaveGame };
 
-export function endGameBroadcast() {
-    socket.send(ClientEvent.END_GAME_MESSAGE);
+export function endGameBroadcast(navigation: navProps['navigation']) {
+    socket.emit(ClientEvent.END_GAME_MESSAGE);
+    navigation.popToTop();
 }
 
-export function createGameOverListener(setGame: React.Dispatch<React.SetStateAction<Game>>, navigation: navProps['navigation'], stopLocationBroadcast: () => void) {
+export function createGameOverListener(setGame: React.Dispatch<React.SetStateAction<Game>>, navigation: navProps['navigation']) {
     socket.on(ServerEvent.GAME_OVER_BROADCAST, (broadcast: GameOverBroadcast) => {
         console.log('game over broadcast received');
         setGame((game) => {
@@ -21,7 +22,6 @@ export function createGameOverListener(setGame: React.Dispatch<React.SetStateAct
             }
         }
         )
-        stopLocationBroadcast();
         navigation.popToTop();
         navigation.navigate('GameDone', { reason: broadcast.reason });
     })
@@ -30,10 +30,11 @@ export function createGameOverListener(setGame: React.Dispatch<React.SetStateAct
     }
 }
 
-export function createPlayerLocationListener(setNearestPlayer: React.Dispatch<React.SetStateAction<LocationMessage>>) {
-    socket.on(ServerEvent.PLAYER_LOCATION_BROADCAST, (location: LocationMessage) => {
+export function createPlayerLocationListener(setNearestPlayer: React.Dispatch<React.SetStateAction<ServerLocationMessage>>) {
+    socket.on(ServerEvent.PLAYER_LOCATION_BROADCAST, (location: ServerLocationMessage) => {
         console.log('player location broadcast received');
         setNearestPlayer(location);
+        console.log(JSON.stringify(location));
     }
     )
     return () => {
@@ -58,7 +59,7 @@ export function createPlayerFoundListener(setGame: React.Dispatch<React.SetState
 
 export function createGameTimeListener(setGame: React.Dispatch<React.SetStateAction<Game>>) {
     socket.on(ServerEvent.GAME_TIME_BROADCAST, (broadcast: GameTimeBroadcast) => {
-        console.log('game time broadcast received');
+        console.log('game time broadcast received' + JSON.stringify(broadcast));
         const type = broadcast.type === GameStatus.GRACE ? 'grace': 'time';
         setGame((game) => {
             return {
@@ -72,8 +73,7 @@ export function createGameTimeListener(setGame: React.Dispatch<React.SetStateAct
     };
 }
 
-export function createGraceOverListener(location: LocationObject, setGame: React.Dispatch<React.SetStateAction<Game>>) {
-    let sendLocationInterval: NodeJS.Timeout;
+export function createGraceOverListener(setGame: React.Dispatch<React.SetStateAction<Game>>, game: Game, openGraceOverModal: () => void) {
     socket.on(ServerEvent.GRACE_OVER_BROADCAST, () => {
         console.log('grace over broadcast received');
         setGame((game) => {
@@ -82,18 +82,37 @@ export function createGraceOverListener(location: LocationObject, setGame: React
                 status: GameStatus.RUNNING
             }
         });
-        sendLocationInterval = setInterval(() => {
-            socket.send(ClientEvent.PLAYER_LOCATION_MESSAGE, { longitude: location.coords.longitude, latitude: location.coords.latitude } as LocationMessage);
-        }, 1000);
+        openGraceOverModal();
     })
-    return {
-        unsubscribe: () => {
+    return () => {
             socket.off(ServerEvent.GRACE_OVER_BROADCAST);
-        },
-        stopLocationBroadcast: () => { clearInterval(sendLocationInterval); }
-    }
+        }
 };
 
 export function gotCaughtBroadcast() {
-    socket.send(ClientEvent.PLAYER_FOUND_MESSAGE);
+    socket.emit(ClientEvent.PLAYER_FOUND_MESSAGE);
+}
+
+export function useCompassHeading(x: number, y: number) {
+  return useMemo(() => {
+    if (y > 0) {
+      return 90 - Math.atan2(x, y) * (180 / Math.PI);
+    } else if (y < 0) {
+      return 270 - Math.atan2(x, y) * (180 / Math.PI);
+    } else if (y === 0 && x < 0) {
+      return 180;
+    } else if (y === 0 && x > 0) {
+      return 0;
+    }
+  }, [x, y])
+}
+
+export function createTimeUntilLocationUpdateListener(setTimeUntilLocationUpdate: React.Dispatch<React.SetStateAction<number>>) {
+    socket.on(ServerEvent.TIME_UNTIL_NEXT_LOCATION_BROADCAST, (broadcast: timeUntilNextLocationBroadcast) => {
+        console.log('location update broadcast received');
+        setTimeUntilLocationUpdate(broadcast.time);
+    })
+    return () => {
+        socket.off(ServerEvent.TIME_UNTIL_NEXT_LOCATION_BROADCAST);
+    };
 }

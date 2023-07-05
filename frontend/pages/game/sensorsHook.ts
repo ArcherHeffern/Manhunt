@@ -2,10 +2,17 @@ import * as Location from 'expo-location';
 import { Magnetometer, MagnetometerMeasurement } from 'expo-sensors';
 import React from 'react';
 
+type Sensors = {
+        location: Location.LocationObject | null;
+        magnetometerData: MagnetometerMeasurement;
+        errorMsg: string;
+        setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
+}
+
 export default function useSensors() {
 
     const [errorMsg, setErrorMsg] = React.useState('');
-    const [location, setLocation] = React.useState<Location.LocationObject|null>(null);
+    const [location, setLocation] = React.useState<null|Location.LocationObject>(null);
     const [magnetometerData, setMagnetometerData] = React.useState<MagnetometerMeasurement>({ x: 0, y: 0, z: 0 });
 
     React.useEffect(() => {
@@ -48,5 +55,4 @@ export default function useSensors() {
         magnetometerData,
         errorMsg,
         setErrorMsg
-    };
-}
+    } as Sensors}

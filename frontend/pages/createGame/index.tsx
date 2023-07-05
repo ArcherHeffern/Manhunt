@@ -12,6 +12,8 @@ const initialFormData: GameSettings = {
   numHunters: 1,
   maxRounds: 1,
   maxTime: 120,
+  hunterInterval: 10,
+  runnerInterval: 20,
   gracePeriod: 60,
   showDistance: false,
   hotCold: false,
@@ -62,6 +64,28 @@ export default function CreateGame({ route, navigation }: createGameProps) {
             keyboardType='numeric'
             onChangeText={(val) => {
               formDispatch({ name: 'maxPlayers', value: parseInt(val) });
+            }}
+            style={styles.field}
+          />
+        </View>
+        <View style={styles.fieldContainer}>
+          <Text>Tracker coolDown (hunter)</Text>
+          <TextInput
+            placeholder={formData.hunterInterval.toString()}
+            keyboardType='numeric'
+            onChangeText={(val) => {
+              formDispatch({ name: 'hunterInterval', value: parseInt(val) });
+            }}
+            style={styles.field}
+          />
+        </View>
+        <View style={styles.fieldContainer}>
+          <Text>Tracker coolDown (runner)</Text>
+          <TextInput
+            placeholder={formData.runnerInterval.toString()}
+            keyboardType='numeric'
+            onChangeText={(val) => {
+              formDispatch({ name: 'runnerInterval', value: parseInt(val) });
             }}
             style={styles.field}
           />
@@ -129,7 +153,7 @@ export default function CreateGame({ route, navigation }: createGameProps) {
           />
         </View>
       </View>
-      {errormessage && <Text>Error: {errormessage}</Text> } 
+      {!!errormessage && <Text>Error: {errormessage}</Text> } 
       <Button title='Create Game' onPress={() => {
         createGameEmitter(formData, username, setErrormessage);
         setUsernameInStorage(username);

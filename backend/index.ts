@@ -10,8 +10,9 @@ import joinGame from './controllers/joinGame';
 import leaveGame from './controllers/leaveGame';
 import startGame from './controllers/startGame';
 import { getGames } from './controllers/dev';
-import { ClientEvent, DebugEvent} from '../frontend/types';
+import { ClientEvent, ClientLocationMessage, DebugEvent} from '../frontend/types';
 import playerFound from './controllers/playerFound';
+import updatePlayerLocation from './controllers/updatePlayerLocation';
 
 const PORT = 8000;
 
@@ -32,6 +33,7 @@ io.on('connection', (socket: SOCKET) => {
   socket.on(ClientEvent.LEAVE_GAME_MESSAGE, () => leaveGame(socket));
   socket.on(ClientEvent.START_GAME_REQUEST, () => startGame(io, socket));
   socket.on(ClientEvent.PLAYER_FOUND_MESSAGE, () => playerFound(socket));
+  socket.on(ClientEvent.PLAYER_LOCATION_MESSAGE, (message: ClientLocationMessage) => updatePlayerLocation(socket, message));
 
   socket.on(DebugEvent.GET_GAMES, () => getGames(socket));
 

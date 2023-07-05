@@ -1,6 +1,6 @@
 import { waitingQueueProps } from '../../types/';
 import { Game, ServerEvent, ClientEvent, GameQueueBroadcast, Role, GameStartBroadcast, StartGameResponse, StatusCode, GameStatus } from '../../types';
-import { createGameEndListener } from '../../common';
+import { createGameEndListener, leaveGame } from '../../common';
 import socket from '../../socket';
 
 export { createGameEndListener };
@@ -69,12 +69,9 @@ export function startGame() {
   socket.emit(ClientEvent.START_GAME_REQUEST);
 }
 
-export function endGame() {
+export function endGame(navigation: waitingQueueProps['navigation']) {
   socket.emit(ClientEvent.END_GAME_MESSAGE);
+  navigation.popToTop();
 }
 
-export function leaveGame(navigation: waitingQueueProps['navigation']) {
-  socket.emit(ClientEvent.LEAVE_GAME_MESSAGE);
-  navigation.popToTop();
-  navigation.navigate('Home');
-}
+export { leaveGame }

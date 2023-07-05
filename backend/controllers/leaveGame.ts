@@ -11,6 +11,8 @@ export default function leaveGame(socket: SOCKET) {
     }
     socket.leave(gameId);
     game.players = game.players.filter(player => player.id !== socket.id);
+    game.runners = game.runners.filter(runner => runner.id !== socket.id);
+    game.hunters = game.hunters.filter(hunter => hunter.id !== socket.id);
     const broadcast: GameQueueBroadcast = {
       players: game.players,
     };

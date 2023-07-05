@@ -65,6 +65,8 @@ export default function createGame(socket: SOCKET, message: object) {
       settings: {
         maxPlayers: gameSettings.maxPlayers,
         numHunters: gameSettings.numHunters,
+        hunterInterval: gameSettings.hunterInterval,
+        runnerInterval: gameSettings.runnerInterval,
         maxRounds: gameSettings.maxRounds,
         maxTime: gameSettings.maxTime,
         gracePeriod: gameSettings.gracePeriod,

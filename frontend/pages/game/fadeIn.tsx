@@ -30,22 +30,16 @@ export default function FadeInView(props: FadeInViewProps) {
           opacity: fadeAnim, // Bind opacity to animated value
         }, styles.fadeIn]}>
         <Text style={styles.fadeInText}>You are a {props.role}</Text>
-        <View style={styles.playerListContainer}>
-          <View>
         <Text style={styles.playerListContainerTitle}>Runners</Text>
-          <FlatList
-            data={props.game.runners}
-            renderItem={({ item }) => <Text style={styles.playerListContainerItem}>{item.name}</Text>}
-          />
-          </View>
-          <View>
-          <Text style={styles.playerListContainerTitle}>Hunters</Text>
-          <FlatList
-            data={props.game.hunters}
-            renderItem={({ item }) => <Text style={styles.playerListContainerItem}>{item.name}</Text>}
-          />
-          </View>
-        </View>
+        <FlatList
+          data={props.game.runners}
+          renderItem={({ item }) => <Text style={styles.playerListContainerItem}>{item.name}</Text>}
+        />
+        <Text style={styles.playerListContainerTitle}>Hunters</Text>
+        <FlatList
+          data={props.game.hunters}
+          renderItem={({ item }) => <Text style={styles.playerListContainerItem}>{item.name}</Text>}
+        />
       </Animated.View>
     </SafeAreaView>
   );

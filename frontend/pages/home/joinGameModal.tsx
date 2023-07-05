@@ -21,7 +21,7 @@ export default function JoinGameModal({ showModal, closeModal, navigation }: Pro
   const {game, setGame} = useContext(GameContext);
 
   useEffect(() => {
-        addJoinGameListener(navigation, socket, setGame, setErrorMessage, closeModal);
+        addJoinGameListener(navigation, socket, setGame, setErrorMessage, closeModal, setGameCode);
         getUsernameFromStorage(setUsername);
 
         return () => {

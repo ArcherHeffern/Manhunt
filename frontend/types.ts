@@ -18,6 +18,7 @@ export enum ServerEvent {
   GAME_START_BROADCAST = 'gameStartBroadcast',
   GRACE_OVER_BROADCAST = 'graceOverBroadcast',
   PLAYER_LOCATION_BROADCAST = 'playerLocationBroadcast',
+  TIME_UNTIL_NEXT_LOCATION_BROADCAST = 'timeUntilNextLocationBroadcast',
   PLAYER_FOUND_BROADCAST = 'playerFoundBroadcast',
   GAME_END_BROADCAST = 'gameEndBroadcast', // for when the game ends prematurely - either in queue or in game
   GAME_OVER_BROADCAST = 'gameOverBroadcast', // for when the game ends normally
@@ -102,6 +103,7 @@ export function isGame(game: object): game is Game {
     typeof (game as Game).hunters === 'object' &&
     typeof (game as Game).runners === 'object' &&
     typeof (game as Game).found === 'object' &&
+    typeof (game as Game).grace === 'number' &&
     typeof (game as Game).time === 'number' &&
     typeof (game as Game).status === 'string' &&
     (typeof (game as Game).winner === 'string' || (game as Game).winner === null) &&
@@ -129,6 +131,8 @@ function isGameSettings(settings: object): settings is GameSettings {
     settings instanceof Object &&
     typeof (settings as GameSettings).maxPlayers === 'number' &&
     typeof (settings as GameSettings).numHunters === 'number' &&
+    typeof (settings as GameSettings).runnerInterval === 'number' &&
+    typeof (settings as GameSettings).hunterInterval === 'number' &&
     typeof (settings as GameSettings).maxRounds === 'number' &&
     typeof (settings as GameSettings).maxTime === 'number' &&
     typeof (settings as GameSettings).gracePeriod === 'number' &&
@@ -185,8 +189,13 @@ export interface GameStartBroadcast extends Broadcast {
 export interface GracePeriodEndBroadcast extends Broadcast {
   time: number; // seconds
 }
-export interface LocationMessage extends Message {
+export interface ServerLocationMessage extends Message {
   player: Player;
+}
+
+export interface ClientLocationMessage extends Message {
+  player: Player;
+  gameId: string;
 }
 
 export interface PlayerFoundMessage extends Message {}
@@ -203,4 +212,8 @@ export interface GameOverBroadcast extends Broadcast {
 export interface GameTimeBroadcast extends Broadcast {
   time: number; // seconds
   type: GameStatus;
+}
+
+export interface timeUntilNextLocationBroadcast extends Broadcast {
+  time: number; // seconds
 }

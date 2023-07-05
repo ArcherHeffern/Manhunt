@@ -4,6 +4,7 @@ import Game from './pages/game';
 import CreateGame from './pages/createGame';
 import HowToPlay from './pages/howToPlay';
 import WaitingQueue from './pages/waitingQueue';
+import GameDone from './pages/gameDone';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { reactStackParamList } from './types/';
@@ -22,6 +23,7 @@ export default function App() {
           <Stack.Screen name='CreateGame' component={CreateGame} options={{headerShown: true}}/>
           <Stack.Screen name='WaitingQueue' component={WaitingQueue} />
           <Stack.Screen name='Game' component={Game} />
+          <Stack.Screen name='GameDone' component={GameDone} />
         </Stack.Navigator>
       </NavigationContainer>
     </GameProvider>
