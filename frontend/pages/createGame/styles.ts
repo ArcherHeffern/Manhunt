@@ -33,5 +33,12 @@ export default StyleSheet.create({
     borderBottomWidth: 1,
     flexGrow: 1,
     paddingHorizontal: 10,
+  },
+  title: {
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 20,
   }
 });
