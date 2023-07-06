@@ -4,6 +4,7 @@ import { Dimensions, Image } from "react-native";
 import { ServerLocationMessage } from "../../types";
 const { height, width } = Dimensions.get("window");
 import { LocationObject } from "expo-location";
+import convertToHeading from "./converted";
 
 type Props = {
     nearestPlayer: ServerLocationMessage;
@@ -30,9 +31,18 @@ export default function Rotator({ nearestPlayer, location }: Props) {
                 return;
             }
             try {
-                const location = await ExpoLocation.getHeadingAsync()
-                // Do the math to update the nearest player direction
-                setNearestPlayerDirection(location.trueHeading);
+                const trueHeading = (await ExpoLocation.getHeadingAsync()).trueHeading;
+                const a = {
+                    latitude: location?.coords?.latitude,
+                    longitude: location?.coords?.longitude
+                }
+                const b = {
+                    latitude: nearestPlayer?.player?.location?.lat || 0,
+                    longitude: nearestPlayer?.player?.location?.lng || 0
+                }
+                console.log(!!(a.latitude && a.longitude && b.latitude && b.longitude));
+                const heading = convertToHeading(a, b, trueHeading)
+                setNearestPlayerDirection(heading);
             } catch (err) {
                 console.log('Error getting location: ', err);
             };
@@ -60,7 +70,7 @@ export default function Rotator({ nearestPlayer, location }: Props) {
 
     return (
         <Image
-            source={require("../../assets/compass_bg.png")}
+            source={require("../../assets/white-arrow.png")}
             style={{
                 width: Math.min(width, height) - 80,
                 height: Math.min(width, height) - 80,
