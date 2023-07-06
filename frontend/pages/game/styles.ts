@@ -8,6 +8,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   title: {
+      textAlign: 'center',
       fontSize: 30,
       fontWeight: 'bold',
       marginTop: 20,
@@ -57,5 +58,18 @@ export default StyleSheet.create({
     height: '50%',
     borderColor: '#000',
     borderWidth: 5
+  }, 
+  compassContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  compass: {
+    width: 200,
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   }
 });

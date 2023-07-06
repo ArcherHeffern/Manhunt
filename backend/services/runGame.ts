@@ -79,7 +79,7 @@ export default async function runGame(io: IO, gameId: string) {
 
         //* Runner Loop
 
-        if (runnerIterations === game.settings.runnerInterval) {
+        if (runnerIterations === 0) {
           // send a location message to all runners
           for (const runner of game.runners) {
             const closestPlayer = findClosestPlayer(runner, game.hunters);
@@ -101,7 +101,7 @@ export default async function runGame(io: IO, gameId: string) {
         runnerIterations = (runnerIterations + 1) % game.settings.runnerInterval;
 
         //* Hunter Loop
-        if (hunterIterations === game.settings.hunterInterval) {
+        if (hunterIterations === 0) {
           // send a location message to all hunters
           for (const hunter of game.hunters) {
             const closestPlayer = findClosestPlayer(hunter, game.runners);
