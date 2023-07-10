@@ -126,6 +126,18 @@ export type GameSettings = {
   hotCold: boolean;
 };
 
+export type GameModeSettings = {
+  maxPlayers: [number, boolean];
+  numHunters: [number, boolean];
+  runnerInterval: [number, boolean];
+  hunterInterval: [number, boolean];
+  maxRounds: [number, boolean];
+  maxTime: [number, boolean];
+  gracePeriod: [number, boolean];
+  showDistance: [boolean, boolean];
+  hotCold: [boolean, boolean];
+}
+
 function isGameSettings(settings: object): settings is GameSettings {
   return (
     settings instanceof Object &&

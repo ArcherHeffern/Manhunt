@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Game, Role } from '../types';
+import { Game, GameModeSettings, Role } from '../types';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/cjs';
 import { GameSettings } from '../types';
@@ -26,6 +26,6 @@ export type waitingQueueProps = NativeStackScreenProps<reactStackParamList, 'Wai
 export type gameDoneProps = NativeStackScreenProps<reactStackParamList, 'GameDone'>;
 
 export type actionType = {
-  name: keyof GameSettings;
-  value: string|number|boolean;
+  name: keyof GameModeSettings;
+  value: [number|boolean, boolean]
 }

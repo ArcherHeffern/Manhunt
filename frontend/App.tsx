@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Home from './pages/home';
 import Game from './pages/game';
-import CreateGame from './pages/createGame';
+import CreateGame from './pages/createGame/gameSettings';
 import HowToPlay from './pages/howToPlay';
 import WaitingQueue from './pages/waitingQueue';
 import GameDone from './pages/gameDone';
