@@ -1,14 +1,14 @@
-import React, { useReducer, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { SafeAreaView, Button, View, Text, TextInput, Switch, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { createGameProps, actionType } from '../../types/';
+import { actionType, createGameSettingsProps } from '../../types/';
 import { GameSettings, GameModeSettings  } from '../../types'
-import { GameContext } from '../../GameProvider';
-import { createGameEmitter, addCreateGameListener } from './utils';
+import { createGameEmitter, addCreateGameListener } from '../createGame/utils';
 import { getUsernameFromStorage, setUsernameInStorage } from '../../common';
 import styles from './styles';
-import { toGameSettings } from './gameModes';
-import NumericInputWrapper from './NumericInputWrapper';
-import ToggleWrapper from './toggleWrapper';
+import { toGameSettings } from '../createGame/gameModes';
+import NumericInputWrapper from '../createGame/NumericInputWrapper';
+import ToggleWrapper from '../createGame/toggleWrapper';
+import { GameContext } from '../../GameProvider';
 
 
 const formReducer = (state: GameModeSettings, action: actionType): GameModeSettings => {
@@ -18,15 +18,30 @@ const formReducer = (state: GameModeSettings, action: actionType): GameModeSetti
   }
 }
 
-export default function CreateGame(gameModeSettings: GameModeSettings, username: string, setUsername: React.Dispatch<React.SetStateAction<string>>, setErrorMessage: React.Dispatch<React.SetStateAction<string>>) {
+export default function GameMode({ route, navigation}: createGameSettingsProps) {
+
+  const {gameModeSettings } = route.params;
+  const { game, setGame } = useContext(GameContext);
+  const [username, setUsername] = useState('');
+  const [errormessage, setErrorMessage] = useState('');
 
   const [formData, formDispatch] = useReducer(formReducer, gameModeSettings);
+
+  useEffect(() => {
+    navigation.setOptions({ title: gameModeSettings.name });
+    const unsubscribe = addCreateGameListener(setGame, navigation, setErrorMessage);
+    getUsernameFromStorage(setUsername);
+
+    return () => {
+      unsubscribe();
+    }
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
         <View style={styles.container}>
-          <Text style={styles.title}>Create Game</Text>
+          <Text style={styles.textContent}>{gameModeSettings.description}</Text>
           <View style={styles.formContainer}>
             <View style={styles.fieldContainer}>
               <Text>Username</Text>
@@ -39,16 +54,17 @@ export default function CreateGame(gameModeSettings: GameModeSettings, username:
               />
             </View>
               {
+                // Shitty fix (key !== description, might need to fix later)
                 Object.keys(formData).map((key: keyof GameModeSettings) => {
                   const values = formData[key];
                   if (!values[1]) {
                     return null;
                   }
-                  if (typeof values[0] === 'boolean') {
+                  if (typeof values[0] === 'boolean' && key !== 'description' && key !== 'name') {
                     return (
                       <ToggleWrapper key={key} name={key} value={values[0]} formDispatch={formDispatch} />
                     )
-                  } else if (typeof values[0] === 'number') {
+                  } else if (typeof values[0] === 'number' && key !== 'description' && key !== 'name') {
                     return (
                       <NumericInputWrapper key={key} name={key} value={values[0]} formDispatch={formDispatch} />
                     )
@@ -57,11 +73,12 @@ export default function CreateGame(gameModeSettings: GameModeSettings, username:
                 })
               }
           <Button title='Create Game' onPress={() => {
-            createGameEmitter(toGameSettings(formData), username, setErrormessage);
+            createGameEmitter(toGameSettings(formData), username, setErrorMessage);
             setUsernameInStorage(username);
           }
           } />
         </View>
+        {!!errormessage && <Text>Error: {errormessage}</Text>}
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

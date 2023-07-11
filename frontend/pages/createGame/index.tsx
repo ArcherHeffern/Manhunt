@@ -1,31 +1,28 @@
-import { View, Text } from 'react-native';
+import { Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { allSettings } from './gameModes';
 import { createGameProps } from '../../types/';
-import { useContext, useEffect, useState } from 'react';
-import { addCreateGameListener } from './utils';
-import { getUsernameFromStorage } from '../../common';
-import { GameContext } from '../../GameProvider';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { GameModeSettings } from '../../types';
+import styles from './styles';
 
 export default function CreateGame({ route, navigation }: createGameProps) {
 
-  const { game, setGame } = useContext(GameContext);
-  const [ username, setUsername ] = useState('');
-  const [ errormessage, setErrormessage ] = useState('');
-
-  useEffect(() => {
-    const unsubscribe = addCreateGameListener(setGame, navigation, setErrormessage);
-    getUsernameFromStorage(setUsername);
-
-    return () => {
-      unsubscribe();
-    }
-  }, []);
-
   return (
-    <SafeAreaView>
-      <Text>Choose Gamemode</Text>
-      {/* Create options to choose from */}
-      {!!errormessage && <Text>Error: {errormessage}</Text>}
-    </SafeAreaView>
+    <ScrollView>
+      <Text style={styles.title}>Choose Gamemode</Text>
+      {Object.keys(allSettings).map((key) => {
+        const value: GameModeSettings = allSettings[key];
+        return (
+          <TouchableOpacity key={value.name} style={styles.gamemodeContainer} onPress={() => {
+            navigation.navigate('CreateGameSettings', {
+              gameModeSettings: value,
+            },
+            );
+          }}>
+            <TextInput value={value.name} style={styles.gamemodeContainerTitle} editable={false} />
+            <Text>{value.description}</Text>
+          </TouchableOpacity>
+        )
+      })}
+    </ScrollView>
   )
-}
+} 

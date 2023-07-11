@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import Home from './pages/home';
 import Game from './pages/game';
-import CreateGame from './pages/createGame/gameSettings';
+import CreateGame from './pages/createGame/';
+import CreateGameSettings from './pages/createGameSettings';
 import HowToPlay from './pages/howToPlay';
 import WaitingQueue from './pages/waitingQueue';
 import GameDone from './pages/gameDone';
@@ -21,6 +22,7 @@ export default function App() {
           <Stack.Screen name='Home' component={Home} options={{headerShown: true}}/>
           <Stack.Screen name='HowToPlay' component={HowToPlay} options={{headerShown: true}}/>
           <Stack.Screen name='CreateGame' component={CreateGame} options={{headerShown: true}}/>
+          <Stack.Screen name='CreateGameSettings' component={CreateGameSettings} options={{headerShown: true}}/>
           <Stack.Screen name='WaitingQueue' component={WaitingQueue} />
           <Stack.Screen name='Game' component={Game} />
           <Stack.Screen name='GameDone' component={GameDone} />

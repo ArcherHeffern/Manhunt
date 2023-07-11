@@ -127,6 +127,8 @@ export type GameSettings = {
 };
 
 export type GameModeSettings = {
+  name: string;
+  description: string;
   maxPlayers: [number, boolean];
   numHunters: [number, boolean];
   runnerInterval: [number, boolean];

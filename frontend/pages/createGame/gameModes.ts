@@ -12,6 +12,8 @@ export const defaultSettings: GameSettings = {
 };
 
 export const loneHunterSettings: GameModeSettings = {
+  name: 'Lone Hunter',
+  description: 'One hunter, multiple runners. The hunter has to find and kill all the runners. The runners have to survive for the duration of the game.',
   maxPlayers: [5, true],
   numHunters: [1, false],
   maxRounds: [1, false],
@@ -23,9 +25,39 @@ export const loneHunterSettings: GameModeSettings = {
   hotCold: [false, false], 
 };
 
+export const duel: GameModeSettings = {
+  name: 'Duel',
+  description: 'One hunter, one runner. The runner has to survive for the duration of the game. The hunter has to find the runner and kill them.',
+  maxPlayers: [2, false],
+  numHunters: [1, false],
+  maxRounds: [1, false],
+  maxTime: [120, true],
+  hunterInterval: [10, true],
+  runnerInterval: [20, true],
+  gracePeriod: [60, true],
+  showDistance: [false, false],
+  hotCold: [false, false],
+}
+
 export const soloEvasionSettings: GameModeSettings = {
+  name: 'Solo Evasion',
+  description: 'One runner, multiple hunters. The runner has to survive for the duration of the game. The hunters have to find and kill the runner.',
   maxPlayers: [5, true],
   numHunters: [10000000, false],
+  maxRounds: [1, false],
+  maxTime: [120, true],
+  hunterInterval: [10, true],
+  runnerInterval: [20, true],
+  gracePeriod: [60, true],
+  showDistance: [false, false],
+  hotCold: [false, false],
+};
+
+export const customSettings: GameModeSettings = {
+  name: 'Custom',
+  description: 'Custom settings. You can set the number of players, hunters, rounds, time, and intervals.',
+  maxPlayers: [5, true],
+  numHunters: [1, true],
   maxRounds: [1, false],
   maxTime: [120, true],
   hunterInterval: [10, true],
@@ -47,4 +79,14 @@ export const toGameSettings = (settings: GameModeSettings): GameSettings => {
     showDistance: settings.showDistance[0],
     hotCold: settings.hotCold[0],
   };
+}
+
+export type AllSettings = {
+  [key: string]: GameModeSettings
+}
+export const allSettings: AllSettings = {
+  soloEvasionSettings,
+  loneHunterSettings,
+  duel,
+  customSettings,
 }
