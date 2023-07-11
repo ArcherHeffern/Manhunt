@@ -13,7 +13,7 @@ export const defaultSettings: GameSettings = {
 
 export const loneHunterSettings: GameModeSettings = {
   name: 'Lone Hunter',
-  description: 'One hunter, multiple runners. The hunter has to find and kill all the runners. The runners have to survive for the duration of the game.',
+  description: 'One hunter, multiple runners. The hunter has to find and eliminate all the runners. The runners have to survive for the duration of the game.',
   maxPlayers: [5, true],
   numHunters: [1, false],
   maxRounds: [1, false],
@@ -27,7 +27,7 @@ export const loneHunterSettings: GameModeSettings = {
 
 export const duel: GameModeSettings = {
   name: 'Duel',
-  description: 'One hunter, one runner. The runner has to survive for the duration of the game. The hunter has to find the runner and kill them.',
+  description: 'One hunter, one runner. The runner has to survive for the duration of the game. The hunter has to find the runner and eliminate them.',
   maxPlayers: [2, false],
   numHunters: [1, false],
   maxRounds: [1, false],
@@ -41,7 +41,7 @@ export const duel: GameModeSettings = {
 
 export const soloEvasionSettings: GameModeSettings = {
   name: 'Solo Evasion',
-  description: 'One runner, multiple hunters. The runner has to survive for the duration of the game. The hunters have to find and kill the runner.',
+  description: 'One runner, multiple hunters. The runner has to survive for the duration of the game. The hunters have to find and eliminate the runner.',
   maxPlayers: [5, true],
   numHunters: [10000000, false],
   maxRounds: [1, false],
