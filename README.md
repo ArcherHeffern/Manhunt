@@ -26,4 +26,5 @@ The relative direction, and optionally the distance of the nearest member of the
 React-native (frontend), node, socket.io, express (backend), linode (devops), typescript (full stack)
 
 ### Images
-![IMG_4704](https://github.com/ArcherHeffern/Manhunt/assets/105125483/a10e3c5b-375b-4b4f-b47e-89ad13b15781)
+
+![IMG_4706](https://github.com/ArcherHeffern/Manhunt/assets/105125483/9b7d30e0-67fc-4374-8404-1a1ef26142e8)
