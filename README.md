@@ -1,32 +1,26 @@
 # Manhunt
-A hide and seek variant where the Hunter can digitally track Runners. Suitable for games in large area such as college campus' or IKEAs!
 
-## Finer Details
+Manhunt is a twist on hide and seek where Hunters and Runners can digitally track the closest member of the other team. Play with 2-15 players. Suitable for games in large area such as college campus' or IKEAs!
 
-*Creating a game*  
-Select create game and input your game settings. Once you are happy with your settings, create the game, you will then be placed in a
-waiting queue and be given a game code to share with your friends.
-Settings: 
-* Max Radius
-* Game Time
-* Max Players
-* \# of Hunters
+### WINNING
+Hunters win by tracking down all the runners before the time limit is up and Runners win by avoiding the hunters until the time limit is up.
 
-*Joining a game*  
-Get a game code for a friend to join their game!
+### TRACKING SYSTEM
+The relative direction, and optionally the distance of the nearest member of the opposing team is broadcasted at a constant interval, to each member of a team. This it less tag-like and more of a tracking game.
 
-*Gameplay*  
-The Runners will get a grace period to run from the Hunter, once the time period is up, the Hunter can move from the starting position,
-and will start recieving location data from the server. The Hunter will get limited information about where the nearest Runner is, updated
-periodically. The Runners will also recieve information about where the Hunter is, at a slower interval. The Hunter needs to take a picture
-of a Runner to get them "out", and all Runners must be photographed before the time limit is up.
+### MULTIPLE MODES!
+* Lone Hunter: One Hunter, everyone else is a Runner
+* Solo Evasion: One Runner, everyone else is a Hunter
+* Custom game: can set any game variable
 
-## Stack
+### PLANNED FEATURES
+* Gamemode: Infection, runners when found are converted to hunters
+* Transition to using Redis for storing games on backend
+* Transition to using Nginx for load balancing
+* Deploy to app and play store
+* Player can create an account
+* Tracker performance and mathematical improvements
+* Revamp "tagging" system where hunters must take a picture of every runner
 
-Backend: 
-node/express (server), Socket.io (full duplex communication), mongoDB (saving games and user data)
-
-Frontend:
-expo/react native
-
-[jamboard](https://jamboard.google.com/d/1sb4QMX9r4g4-6h80OtIz6TV5eNWyPztaeuTQXJQWV_E/edit?usp=sharing)
+### Stack
+React-native (frontend), node, socket.io, express (backend), linode (devops), typescript (full stack)
