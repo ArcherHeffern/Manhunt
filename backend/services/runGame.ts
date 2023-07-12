@@ -125,11 +125,12 @@ export default async function runGame(io: IO, gameId: string) {
     });
   }
 
-  console.log('running game loop');
-  console.log('picking teams');
   const game = games[gameId] as Game;
   game.status = GameStatus.GRACE;
-  const numHunters = game.settings.numHunters >= game.players.length ? game.players.length - 2 : game.settings.numHunters;
+  let numHunters = game.players.length - 2;
+  if (game.settings.numHunters < game.players.length && game.settings.numHunters > 0) {
+    numHunters = game.settings.numHunters;
+  }
   const numPlayers = game.players.length;
 
   // Assign roles

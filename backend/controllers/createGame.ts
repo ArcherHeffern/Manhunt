@@ -30,7 +30,7 @@ export default function createGame(socket: SOCKET, message: object) {
     errorMessage = null;
     if (gameSettings.maxPlayers < 2) {
       errorMessage = 'Not enough players';
-    } else if (gameSettings.numHunters < 1) {
+    } else if (gameSettings.numHunters < 1 && gameSettings.numHunters != -1) { // -1 means solo evasion
       errorMessage = 'Not enough hunters';
     } else if (gameSettings.numHunters >= gameSettings.maxPlayers) {
       errorMessage = 'Too many hunters';

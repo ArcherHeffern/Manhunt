@@ -14,7 +14,7 @@ import { GameContext } from '../../GameProvider';
 const formReducer = (state: GameModeSettings, action: actionType): GameModeSettings => {
   return {
     ...state,
-    [action.name]: [...action.value]
+    [action.name]: [action.value, true],
   }
 }
 

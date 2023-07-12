@@ -43,7 +43,7 @@ export const soloEvasionSettings: GameModeSettings = {
   name: 'Solo Evasion',
   description: 'One runner, multiple hunters. The runner has to survive for the duration of the game. The hunters have to find and eliminate the runner.',
   maxPlayers: [5, true],
-  numHunters: [10000000, false],
+  numHunters: [-1, false],
   maxRounds: [1, false],
   maxTime: [120, true],
   hunterInterval: [10, true],
